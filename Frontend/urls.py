@@ -55,4 +55,5 @@ urlpatterns = [
     path('analysisUser/', views.analise, name="analysisUser"),
     path('evolution/', views.evolucao, name="evolution"),
     path('evolutionAdmin/', views.evolucaoAdmin, name="evolutionadmin"),
+    path('favourite/', views.getFavourites, name="favourite"),
 ]

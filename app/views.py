@@ -489,3 +489,23 @@ def evolucaoAdmin(request):
         return render(request, 'compras.html', {'lista': lista, 'header': 'Compras ao longo do tempo'})
     else:
         raise PermissionDenied()
+
+
+def getFavourites(request):
+    r = requests.get("https://tqsapitests.herokuapp.com/favourite/")
+    if r.status_code != 200:
+        return FileNotFoundError()
+    ids = []
+    for i in r:
+        ids.append(r[id])
+
+    cars = []
+    for i in ids:
+        car = request.get("https://tqsapitests.herokuapp.com/car/" + str(i))
+        cars.append(car)
+
+    print(cars)
+    tparams = {
+        'database': cars
+    }
+    return render(request, 'index.html', tparams)
