@@ -29,7 +29,7 @@ urlpatterns = [
     path('logout', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('signup/', views.signup, name='signup'),
     path('successregister/', views.successregister, name="successregister"),
-    path('infoItem', views.getItem, name='infoitem'),
+    path('infoItem/<int:carId>', views.getItem, name='infoitem'),
     path('search', views.search, name='search'),
     path('profile/', views.getProfile, name="profile"),
     path('profileedit/', views.editprofile, name="profileedit"),

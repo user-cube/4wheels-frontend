@@ -57,13 +57,12 @@
             <div class="col-md-3 offset-1">
                 <div class="card" style="width: border-box">
                     {% load safeTools %}
-                    <img class="card-img-top" src="{{ row.picture | spliter }}" style="height: 280px"
-                         alt="{{ row.titulo }}">
+                    <img class="card-img-top" src="data:image/jpeg;base64,{{ row.photo }}" style="height: 280px"
+                         alt="{{ row.model }}">
                     <div class="card-body">
-                        <h5 class="card-title">{{ row.titulo }}</h5>
-                        <p class="card-text" style="color: red">{% if row.quantidade == 0 %} Indisponível {% endif %}</p>
-                        <p class="card-text">{{ row.short }}</p>
-                        <a href="/infoItem?titulo={{ row.id }}" class="btn btn-primary">Ver mais</a>
+                        <h5 class="card-title">{{ row.brand }} {{ row.model }}</h5>
+                        <p class="card-text">Combustível: {{ row.typeOfFuel }}</p>
+                        <a href="/infoItem/{{ row.id }}" class="btn btn-primary">Ver mais</a>
                     </div>
                 </div>
             </div>

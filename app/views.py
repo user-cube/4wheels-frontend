@@ -12,13 +12,18 @@ from app.forms import SignUpForm, EmailForm
 from app.models import Items, Profile, Encomenda
 import os
 from django.db.models import Count, F, Sum
+import requests
 
 
 def home(request):
+    r = requests.get("https://tqsapitests.herokuapp.com/car/")
+    if r.status_code != 200:
+        return FileNotFoundError()
+    json = r.json()
     tparams = {
         'title': 'Home Page',
         'year': datetime.now().year,
-        'database': Items.objects.all()
+        'database': json
     }
     return render(request, 'index.html', tparams)
 
@@ -69,11 +74,15 @@ def successregister(request):
     return render(request, 'successregister.html')
 
 
-def getItem(request):
+def getItem(request, carId):
     if request.method == 'GET':
-        titulo = request.GET['titulo']
+        r = requests.get("https://tqsapitests.herokuapp.com/car/" + str(carId))
+        if r.status_code != 200:
+            return FileNotFoundError()
+        json = r.json()
+        print(json)
         tparams = {
-            'database': Items.objects.filter(id=titulo)
+            'row': json
         }
         return render(request, 'infoItem.html', tparams)
     else:
