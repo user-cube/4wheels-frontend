@@ -6,7 +6,7 @@
                 <li {% if request.resolver_match.url_name == 'boughtlist' %}class="nav-item active"{% endif %}
                     {% if request.resolver_match.url_name == 'boughtSearch' %}class="nav-item active"
                     {% else %}class="nav-item"{% endif %}>
-                    <a class="nav-link" href="{% url 'boughtlist' %}">My Items</a>
+                    <a class="nav-link" href="{% url 'favourite' %}">Favourites</a>
                 </li>
             {% endif %}
             {% if user.is_superuser %}

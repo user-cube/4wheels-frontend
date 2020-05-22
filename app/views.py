@@ -13,7 +13,13 @@ from app.models import Items, Profile, Encomenda
 import os
 from django.db.models import Count, F, Sum
 import requests
+from datetime import datetime, timedelta, timezone
 
+from jwt import (
+    JWT,
+)
+from jwt.utils import get_int_from_datetime
+jwtManager = JWT()
 
 def home(request):
     r = requests.get("https://tqsapitests.herokuapp.com/car/")
@@ -122,8 +128,15 @@ def getProfile(request):
     if not request.user.is_authenticated:
         return redirect('login')
     else:
+        r = requests.post("https://tqsapitests.herokuapp.com/authenticate",
+                          json={'username': 'ruicoelho@ua.pt', 'password': '123456'})
+        json = r.json()
+        token = json['token']
+        r = requests.get("https://tqsapitests.herokuapp.com/profile/", headers={'Authorization': 'Bearer ' + token})
+        json = r.json()
+        print(json)
         tparams = {
-            'database': Profile.objects.filter(user=request.user)
+            'row': json
         }
         return render(request, 'profile.html', tparams)
 
@@ -492,20 +505,25 @@ def evolucaoAdmin(request):
 
 
 def getFavourites(request):
-    r = requests.get("https://tqsapitests.herokuapp.com/favourite/")
+    r = requests.post("https://tqsapitests.herokuapp.com/authenticate", json={'username':'ruicoelho@ua.pt', 'password':'123456'})
+    json = r.json()
+    token = json['token']
+    r = requests.get("https://tqsapitests.herokuapp.com/favourite/", headers={'Authorization': 'Bearer ' + token})
     if r.status_code != 200:
         return FileNotFoundError()
     ids = []
-    for i in r:
-        ids.append(r[id])
+    lista = []
+    lista.append(r.json())
+    for i in lista:
+        ids.append(i['id'])
 
     cars = []
     for i in ids:
-        car = request.get("https://tqsapitests.herokuapp.com/car/" + str(i))
-        cars.append(car)
+        car = requests.get("https://tqsapitests.herokuapp.com/car/" + str(i))
+        cars.append(car.json())
 
     print(cars)
     tparams = {
         'database': cars
     }
-    return render(request, 'index.html', tparams)
+    return render(request, 'favourite.html', tparams)
