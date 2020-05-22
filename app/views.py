@@ -14,41 +14,24 @@ import os
 from django.db.models import Count, F, Sum
 import requests
 from datetime import datetime, timedelta, timezone
-
-from jwt import (
-    JWT,
-)
-from jwt.utils import get_int_from_datetime
-jwtManager = JWT()
+import jwt
+from dotenv import load_dotenv
+load_dotenv()
+KEY = os.getenv('KEY')
 
 def home(request):
     r = requests.get("https://tqsapitests.herokuapp.com/car/")
     if r.status_code != 200:
         return FileNotFoundError()
+
     json = r.json()
+
     tparams = {
         'title': 'Home Page',
         'year': datetime.now().year,
         'database': json
     }
     return render(request, 'index.html', tparams)
-
-
-def findus(request):
-    tparams = {
-        'title': 'Find Us',
-        'year': datetime.now().year,
-    }
-    return render(request, 'contact.html', tparams)
-
-
-def about(request):
-    tparams = {
-        'title': 'About Us',
-        'message': 'Your application description page.',
-        'year': datetime.now().year,
-    }
-    return render(request, 'about.html', tparams)
 
 
 def login(request):
@@ -86,9 +69,21 @@ def getItem(request, carId):
         if r.status_code != 200:
             return FileNotFoundError()
         json = r.json()
-        print(json)
+
+        message = {
+            'email': json['ownerMail'],
+            'iat': datetime.now(timezone.utc),
+            'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
+        }
+        token = jwt.encode(message, KEY, algorithm='HS512')
+        r = requests.get("https://tqsapitests.herokuapp.com/profile/", headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
+
+        if r.status_code != 200:
+            return FileNotFoundError()
         tparams = {
-            'row': json
+            'row': json,
+            'seller': r.json(),
+            'year': datetime.now().year,
         }
         return render(request, 'infoItem.html', tparams)
     else:
@@ -134,7 +129,6 @@ def getProfile(request):
         token = json['token']
         r = requests.get("https://tqsapitests.herokuapp.com/profile/", headers={'Authorization': 'Bearer ' + token})
         json = r.json()
-        print(json)
         tparams = {
             'row': json
         }
@@ -150,7 +144,6 @@ def editprofile(request):
             'user': request.user
         }
         return render(request, 'editProfile.html', tparams)
-
 
 def updateProfile(request):
     if request.method == 'POST':
@@ -173,7 +166,6 @@ def updateProfile(request):
                 profiler.save()
             return redirect('profileedit')
 
-
 def painel(request):
     if request.user.is_authenticated and request.user.is_superuser:
         tparams = {
@@ -183,13 +175,11 @@ def painel(request):
     else:
         return redirect('home')
 
-
 def addProducts(request):
     if request.user.is_authenticated and request.user.is_superuser:
         return render(request, 'addItem.html')
     else:
         return redirect('home')
-
 
 def processAdd(request):
     if request.method == 'POST':
@@ -204,7 +194,6 @@ def processAdd(request):
     else:
         return redirect('home')
 
-
 def editProducts(request):
     if request.method == 'GET':
         if request.user.is_authenticated and request.user.is_superuser:
@@ -216,7 +205,6 @@ def editProducts(request):
             return redirect('home')
     else:
         return redirect('home')
-
 
 def processEdit(request):
     if request.method == 'POST':
@@ -236,7 +224,6 @@ def processEdit(request):
     else:
         return redirect('home')
 
-
 def removeProducts(request):
     if request.method == 'GET':
         if request.user.is_authenticated and request.user.is_superuser:
@@ -246,7 +233,6 @@ def removeProducts(request):
             return redirect('home')
     else:
         return redirect('home')
-
 
 def searchAdmin(request):
     if request.method == 'GET':
@@ -258,75 +244,6 @@ def searchAdmin(request):
     else:
         return redirect('home')
 
-
-def addCart(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            if 'products' in request.session.keys():
-                prods = request.session.__getitem__('products')
-                prods.append(request.POST['id'])
-                request.session.__setitem__('products', prods)
-            else:
-                request.session.__setitem__('products', [])
-                prods = request.session.__getitem__('products')
-                prods.append(request.POST['id'])
-                request.session.__setitem__('products', prods)
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-        else:
-            return redirect('home')
-    else:
-        return redirect('login')
-
-def removeCart(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            index = request.POST['index']
-            products = request.session['products']
-            products.pop(int(index))
-            request.session.__setitem__('products', products)
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-    return redirect('login')
-
-
-def shoppingCart(request):
-    if 'products' not in request.session.keys():
-        return
-    total = 0
-    items = []
-    for i in request.session['products']:
-        prod = Items.objects.get(id=i)
-        items.append(prod)
-        total += prod.preco
-
-    tparams = {
-        'shoppingbag': items,
-        'total': total
-    }
-    return render(request, 'shoppingCart.html', tparams)
-
-
-def checkout(request):
-
-    if not request.user.is_authenticated:
-        return redirect('login')
-
-    for i in request.session['products']:
-        adder = Encomenda(user=request.user, produtos=Items.objects.get(id=i))
-        adder.preco = Items.objects.get(id=i).preco
-        adder.total = adder.preco * adder.quantidade
-        adder.save()
-        Items.objects.filter(id=i).update(quantidade=F('quantidade') - 1)
-        request.session.__setitem__('products', [])
-
-    send_mail(subject='Compra efetuada com sucesso',
-              message='A tua compra já se encontra disponível no painel de itens comprados.\nPodes aceder em: https://xpto-store.herokuapp.com/boughtlist/\nGratos pela tua preferência,\nXPTO Store',
-              from_email=os.getenv('EMAIL'),
-              recipient_list=[request.user.email]
-              )
-    messages.info(request, "Compra efetuada com sucesso!")
-    return redirect('boughtlist')
-
-
 def bought(request):
     if request.user.is_authenticated:
         tparams = {
@@ -337,6 +254,7 @@ def bought(request):
     else:
         return redirect('login'
                         '')
+
 def boughtAdmin(request):
     if request.user.is_superuser and request.user.is_authenticated:
         tparams = {
@@ -393,9 +311,6 @@ def buyItem(request):
         else:
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     return redirect('login')
-
-def contact(request):
-    return render(request, 'contactUS.html')
 
 def sendEmail(request):
     if request.method == 'POST':
@@ -472,22 +387,6 @@ def analise(request):
         else:
             redirect('login')
 
-def evolucao(request):
-    if request.user.is_authenticated and not request.user.is_superuser:
-        encomendas = Encomenda.objects.filter(user=request.user).values('produtos_id', 'data').annotate(
-            num=Count('produtos'))
-
-        lista = []
-        for i in encomendas:
-            print(i)
-            lista.append([i['data'].strftime("%m/%d/%Y"), i['num']])
-
-        return render(request, 'compras.html', {'lista':lista, 'header': 'Compras ao longo do tempo'})
-    else:
-        if request.user.is_superuser:
-            raise PermissionDenied()
-        else:
-            redirect('login')
 
 def evolucaoAdmin(request):
     if request.user.is_authenticated and request.user.is_superuser:
@@ -505,6 +404,15 @@ def evolucaoAdmin(request):
 
 
 def getFavourites(request):
+    """
+    Return all favorites by a user.
+    Args:
+        request: the request.
+
+    Returns:
+        A view with all favorites for a user.
+
+    """
     r = requests.post("https://tqsapitests.herokuapp.com/authenticate", json={'username':'ruicoelho@ua.pt', 'password':'123456'})
     json = r.json()
     token = json['token']

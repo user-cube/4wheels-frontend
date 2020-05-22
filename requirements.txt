@@ -3,4 +3,4 @@ gunicorn
 django-heroku
 python-dotenv
 requests
-jwt==1.0.0
+pyjwt
