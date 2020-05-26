@@ -15,12 +15,11 @@ from django.db.models import Count, F, Sum
 import requests
 from datetime import datetime, timedelta, timezone
 import jwt
-from dotenv import load_dotenv
 from base64 import b64encode
+from app.tools.tokenizer import Tokenizer
 
-load_dotenv()
+tokenizer = Tokenizer()
 
-KEY = os.getenv('KEY')
 
 
 def home(request):
@@ -91,14 +90,8 @@ def getItem(request, carId):
             return FileNotFoundError()
         json = r.json()
 
-        message = {
-            'email': json['ownerMail'],
-            'iat': datetime.now(timezone.utc),
-            'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
-        }
-        token = jwt.encode(message, KEY, algorithm='HS512')
         r = requests.get("https://tqsapitests.herokuapp.com/profile/",
-                         headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
+                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
         if r.status_code != 200:
             return FileNotFoundError()
@@ -153,14 +146,8 @@ def getProfile(request):
     if not request.user.is_authenticated:
         return redirect('login')
     else:
-        message = {
-            'email': request.user.email,
-            'iat': datetime.now(timezone.utc),
-            'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
-        }
-        token = jwt.encode(message, KEY, algorithm='HS512')
         r = requests.get("https://tqsapitests.herokuapp.com/profile/",
-                         headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
+                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
         json = r.json()
         tparams = {
             'row': json,
@@ -173,14 +160,9 @@ def editProfile(request):
     if not request.user.is_authenticated:
         return redirect('login')
     else:
-        message = {
-            'email': request.user.email,
-            'iat': datetime.now(timezone.utc),
-            'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
-        }
-        token = jwt.encode(message, KEY, algorithm='HS512')
+
         r = requests.get("https://tqsapitests.herokuapp.com/profile/",
-                         headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
+                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
         json = r.json()
         tparams = {
             'row': json,
@@ -193,13 +175,6 @@ def editProfile(request):
 def updateProfile(request):
     if request.user.is_authenticated:
         if request.method == "POST":
-            message = {
-                'email': request.user.email,
-                'iat': datetime.now(timezone.utc),
-                'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
-            }
-            token = jwt.encode(message, KEY, algorithm='HS512')
-
             try:
                 image = request.FILES['picture'].file.read()
                 b64pic = b64encode(image)
@@ -220,7 +195,7 @@ def updateProfile(request):
             }
 
             r = requests.put("https://tqsapitests.herokuapp.com/profile/", json=content,
-                             headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
+                             headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
             if r.status_code != 200:
                 messages.error(request, "Não foi possível atualizar o seu perfil.")
@@ -500,14 +475,8 @@ def getFavourites(request):
 
     """
     if request.user.is_authenticated:
-        message = {
-            'email': request.user.email,
-            'iat': datetime.now(timezone.utc),
-            'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
-        }
-        token = jwt.encode(message, KEY, algorithm='HS512')
         r = requests.get("https://tqsapitests.herokuapp.com/favourite/",
-                         headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
+                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
         if r.status_code != 200:
             return FileNotFoundError()
 
@@ -539,14 +508,8 @@ def getFavourites(request):
 
 def deleteFavourite(request, favID):
     if request.user.is_authenticated:
-        message = {
-            'email': request.user.email,
-            'iat': datetime.now(timezone.utc),
-            'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
-        }
-        token = jwt.encode(message, KEY, algorithm='HS512')
         r = requests.delete("https://tqsapitests.herokuapp.com/favourite/" + str(favID),
-                            headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
+                            headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
         if r.status_code != 200:
             messages.error(request, "Não foi possível apagar o favorito.")
