@@ -2,13 +2,14 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+from django.test import TestCase
 
-class HomepageLoggedOut():
-    def setup_method(self):
+class HomepageLoggedOut(TestCase):
+    def setUp(self) -> None:
         self.driver = webdriver.Chrome()
         self.vars = {}
 
-    def teardown_method(self):
+    def tearDown(self) -> None:
         self.driver.quit()
 
     def test_untitled(self):
@@ -109,3 +110,51 @@ class HomepageLoggedOut():
         # 38 | click | css=.fa |
         self.driver.find_element(By.CSS_SELECTOR, ".fa").click()
 
+
+class TestSearchBarTest(TestCase):
+    def setUp(self) -> None:
+        self.driver = webdriver.Chrome()
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_untitled(self):
+        # Test name: Untitled
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("http://localhost:8000/")
+        # 2 | setWindowSize | 1552x848 |
+        self.driver.set_window_size(1552, 848)
+        # 3 | click | name=search |
+        self.driver.find_element(By.NAME, "search").click()
+        # 4 | type | name=search | Tesla
+        self.driver.find_element(By.NAME, "search").send_keys("Tesla")
+        # 5 | click | css=.example > button |
+        self.driver.find_element(By.CSS_SELECTOR, ".example > button").click()
+        # 6 | click | css=.col-md-3:nth-child(1) .card-body |
+        self.driver.find_element(By.CSS_SELECTOR, ".col-md-3:nth-child(1) .card-body").click()
+        # 7 | click | name=search |
+        self.driver.find_element(By.NAME, "search").click()
+        # 8 | type | name=search | Model X
+        self.driver.find_element(By.NAME, "search").send_keys("Model X")
+        # 9 | click | css=input:nth-child(4) |
+        self.driver.find_element(By.CSS_SELECTOR, "input:nth-child(4)").click()
+        # 10 | click | css=.example > button |
+        self.driver.find_element(By.CSS_SELECTOR, ".example > button").click()
+        # 11 | click | css=.card-body |
+        self.driver.find_element(By.CSS_SELECTOR, ".card-body").click()
+        # 12 | click | css=.row |
+        self.driver.find_element(By.CSS_SELECTOR, ".row").click()
+        # 13 | click | name=search |
+        self.driver.find_element(By.NAME, "search").click()
+        # 14 | type | name=search | 2020
+        self.driver.find_element(By.NAME, "search").send_keys("2020")
+        # 15 | click | css=.example |
+        self.driver.find_element(By.CSS_SELECTOR, ".example").click()
+        # 16 | click | css=input:nth-child(5) |
+        self.driver.find_element(By.CSS_SELECTOR, "input:nth-child(5)").click()
+        # 17 | click | css=.example > button |
+        self.driver.find_element(By.CSS_SELECTOR, ".example > button").click()
+        # 18 | click | css=.col-md-3:nth-child(2) .card-body |
+        self.driver.find_element(By.CSS_SELECTOR, ".col-md-3:nth-child(2) .card-body").click()
