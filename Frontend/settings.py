@@ -22,20 +22,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '_9ziza%h+ivtknzw&&3u1!ef23lu83%d#+@g9qhuk-q9ot=2ux'
+SECRET_KEY = os.getenv('DJANGO_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-"""
-if os.environ.get('DJANGO_DEBUG'):
+
+if os.getenv('DJANGO_DEBUG') == "1":
     print("Debug is enabled.")
     DEBUG = True
-    # When not specified, ALLOW_HOSTS defaults to:
-    # ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
 else:
     DEBUG = False
-    ALLOWED_HOSTS = ["https://xpto-store.herokuapp.com/"]
-"""
+    ALLOWED_HOSTS = ["https://tqs4wheels.herokuapp.com/", "https://tqsfrontendtest.herokuapp.com/"]
 
 # Application definition
 

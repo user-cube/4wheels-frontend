@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags %}
+                <script>alert("{{ message }}")</script> {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-lg-12" style="text-align: center">
+            <h1>Os meus favoritos</h1>
+            <hr>
+            <br>
+        </div>
+        {% if database|length > 0 %}
+            <table class="table table-responsive-lg table-hover"
+                   style="text-align: center; table-layout: fixed">
+                <thead class="thead-dark">
+                <tr>
+                    <th></th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Ano</th>
+                    <th>Mês</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in database %}
+                    <tr>
+                        <td><img src="data:image/jpeg;base64,{{ row.photo }}" style="width: 50px"></td>
+                        <td>{{ row.brand }}</td>
+                        <td>{{ row.model }}</td>
+                        <td>{{ row.year }}</td>
+                        <td>{{ row.month }}</td>
+                        <td>
+                            <div>
+                                <a href="/infoItem/{{ row.id }}" class="btn btn-primary"><i class="fa fa-info"></i></a>
+                                <a href="/delete/favourite/{{ row.id }}" class="btn btn-danger"><i
+                                        class="fa fa-trash"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="col-lg-12" style="text-align: center">
+            <p>Ainda não tem favoritos adicionados.</p>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -40,18 +40,6 @@
                         {% else %}class="nav-item"{% endif %}>
                         <a class="nav-link" href="{% url 'home' %}">Home</a>
                     </li>
-                    <li {% if request.resolver_match.url_name == 'about' %}class="nav-item active"
-                        {% else %}class="nav-item"{% endif %}>
-                        <a class="nav-link" href="{% url 'about' %}">About Us</a>
-                    </li>
-                    <li {% if request.resolver_match.url_name == 'find' %}class="nav-item active"
-                        {% else %}class="nav-item"{% endif %}>
-                        <a class="nav-link" href="{% url 'find' %}">Find Us</a>
-                    </li>
-                    <li {% if request.resolver_match.url_name == 'contact' %}class="nav-item active"
-                        {% else %}class="nav-item"{% endif %}>
-                        <a class="nav-link" href="{% url 'contact' %}">Contact Us</a>
-                    </li>
                 </ul>
             {% endif %}
                 {% if request.user.is_authenticated and not user.is_superuser%}
