@@ -27,6 +27,6 @@ jobs:
         pip install -r requirements.txt
     - name: Run Tests
       run: |
-        python manage.py test
+        python manage.py test app
       env:
           DJANGO_KEY : ${{ secrets.DJANGO_KEY }}
