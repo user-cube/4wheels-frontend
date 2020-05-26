@@ -36,9 +36,6 @@ jobs:
           && sudo mv chromedriver /usr/local/bin/chromedriver \
           && sudo chmod +x /usr/local/bin/chromedriver \
           && chromedriver --version
-    - name: Install chromedriver
-      run: |
-        seleniumbase install chromedriver
     - name: Run Tests
       run: |
         python manage.py test app
