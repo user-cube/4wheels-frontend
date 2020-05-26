@@ -22,6 +22,7 @@ class Tokenizer:
 
         Returns:
             a jwt with user email.
+
         """
         message = {
             'email': email,

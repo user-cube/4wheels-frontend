@@ -26,8 +26,9 @@ def home(request):
         request: actual request.
 
     Returns:
-        The homepage rendered after fetch
+        the homepage rendered after fetch
         Spring API.
+
     """
     r = requests.get("https://tqsapitests.herokuapp.com/car/")
     if r.status_code != 200:
