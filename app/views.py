@@ -1,15 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate
-from django.core.exceptions import PermissionDenied
-from django.core.mail import send_mail
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, redirect
 
 # Create your views here.
-from app.forms import SignUpForm, EmailForm
-from app.models import Items, Profile, Encomenda
-import os
-from django.db.models import Count, F, Sum
+from app.forms import SignUpForm
+from app.models import Profile
 import requests
 from datetime import datetime
 from base64 import b64encode
