@@ -21,8 +21,10 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Start Selenoid Server
-      uses: Xotabu4/selenoid-github-action@v1
+    - name: <e.g. Selenoid >
+        uses: ajinx/selenoid@v2
+    - uses: actions/checkout@v2
+    - run: npm ci
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
