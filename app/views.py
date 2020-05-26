@@ -63,7 +63,7 @@ def signup(request):
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
+            authenticate(username=username, password=raw_password)
             profiler = Profile(nome=request.POST['first_name'],
                                user=request.POST['username'],
                                picture='app/static/img/default.jpg',
@@ -119,27 +119,31 @@ def search(request):
     if request.method == 'GET':
         content = request.GET['search']
         tipo = request.GET['pesquisa']
+        isOk = False
         if tipo == "brand":
             r = requests.get("https://tqsapitests.herokuapp.com/car/brand/" + content)
             if r.status_code != 200:
                 return FileNotFoundError()
+            isOk = True
         if tipo == "model":
             r = requests.get("https://tqsapitests.herokuapp.com/car/model/" + content)
             if r.status_code != 200:
                 return FileNotFoundError()
+            isOk = True
         if tipo == "year":
             r = requests.get("https://tqsapitests.herokuapp.com/car/year/" + content)
             if r.status_code != 200:
                 return FileNotFoundError()
+            isOk = True
+        if isOk:
+            json = r.json()
+            tparams = {
+                'database': json,
+                'year': datetime.now().year,
+            }
+            return render(request, 'index.html', tparams)
         else:
             return render(request, 'index.html', {'database': [], 'year': datetime.now().year})
-
-        json = r.json()
-        tparams = {
-            'database': json,
-            'year': datetime.now().year,
-        }
-        return render(request, 'index.html', tparams)
     else:
         return redirect('home')
 
