@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.core.exceptions import PermissionDenied
@@ -13,8 +11,7 @@ from app.models import Items, Profile, Encomenda
 import os
 from django.db.models import Count, F, Sum
 import requests
-from datetime import datetime, timedelta, timezone
-import jwt
+from datetime import datetime
 from base64 import b64encode
 from app.tools.tokenizer import Tokenizer
 
@@ -503,7 +500,7 @@ def getFavourites(request):
         }
         return render(request, 'favourite.html', tparams)
     else:
-        return render('login')
+        return redirect('login')
 
 
 def deleteFavourite(request, favID):
