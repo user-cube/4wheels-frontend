@@ -1,10 +1,10 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-        <div class="row">
+    <div class="row">
         <div class="col-lg-2">
             {% load static %}
-            <img src="{% static 'img/profile_pictures/-688509758/66734787_2427483087310004_3406724701492346880_o.jpg' %}" class="img-responsive img-thumbnail ">
+            <img src="data:image/jpeg;base64,{{ row.photo }}" class="img-responsive img-thumbnail ">
             <br>
             <br>
             <a href="{% url 'profileedit' %}" class="btn btn-success"><span
@@ -27,7 +27,8 @@
                     <div class="col-lg-6">
                         <div class="input-group">
                             <input id="morada" name="morada" type="text"
-                                   placeholder="Morada" class="form-control input-lg" value="{{ row.address }}" readonly>
+                                   placeholder="Morada" class="form-control input-lg" value="{{ row.address }}"
+                                   readonly>
                         </div>
                     </div>
                 </div>
@@ -61,5 +62,5 @@
                 </div>
             </form>
         </div>
-</div>
+    </div>
 {% endblock %}

@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, redirect
 
 # Create your views here.
@@ -16,10 +16,23 @@ import requests
 from datetime import datetime, timedelta, timezone
 import jwt
 from dotenv import load_dotenv
+from base64 import b64encode
+
 load_dotenv()
+
 KEY = os.getenv('KEY')
 
+
 def home(request):
+    """
+    Get homepage view.
+    Args:
+        request: actual request.
+
+    Returns:
+        The homepage rendered after fetch
+        Spring API.
+    """
     r = requests.get("https://tqsapitests.herokuapp.com/car/")
     if r.status_code != 200:
         return FileNotFoundError()
@@ -35,6 +48,14 @@ def home(request):
 
 
 def login(request):
+    """
+    Return login page.
+    Args:
+        request: actual request.
+
+    Returns:
+        Rendered login page.
+    """
     return render(request, 'login.html')
 
 
@@ -76,7 +97,8 @@ def getItem(request, carId):
             'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
         }
         token = jwt.encode(message, KEY, algorithm='HS512')
-        r = requests.get("https://tqsapitests.herokuapp.com/profile/", headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
+        r = requests.get("https://tqsapitests.herokuapp.com/profile/",
+                         headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
 
         if r.status_code != 200:
             return FileNotFoundError()
@@ -94,27 +116,35 @@ def search(request):
     if request.method == 'GET':
         pesquisa = request.GET['search']
         tipo = request.GET['pesquisa']
-        if tipo == "nome":
+        if tipo == "brand":
+            r = requests.get("https://tqsapitests.herokuapp.com/car/brand/" + pesquisa)
+            if r.status_code != 200:
+                return FileNotFoundError()
+
+            json = r.json()
             tparams = {
-                'database': Items.objects.filter(titulo__contains=pesquisa)
+                'database': json
             }
-        if tipo == "desc":
+        if tipo == "model":
+            r = requests.get("https://tqsapitests.herokuapp.com/car/model/" + pesquisa)
+            if r.status_code != 200:
+                return FileNotFoundError()
+
+            json = r.json()
             tparams = {
-                'database': Items.objects.filter(descricao__contains=pesquisa)
+                'database': json
             }
-        if tipo == "disp":
+        if tipo == "year":
+            r = requests.get("https://tqsapitests.herokuapp.com/car/year/" + pesquisa)
+            if r.status_code != 200:
+                return FileNotFoundError()
+
+            json = r.json()
             tparams = {
-                'database': Items.objects.filter(quantidade__gt=0)
+                'database': json,
+                'year': datetime.now().year,
             }
-        if tipo == "precoa":
-            tparams = {
-                'database': Items.objects.all().order_by("preco")
-            }
-        if tipo == "precod":
-            tparams = {
-                'database': Items.objects.all().order_by("-preco")
-            }
-        return render(request, 'search.html', tparams)
+        return render(request, 'index.html', tparams)
     else:
         return redirect('home')
 
@@ -123,48 +153,86 @@ def getProfile(request):
     if not request.user.is_authenticated:
         return redirect('login')
     else:
-        r = requests.post("https://tqsapitests.herokuapp.com/authenticate",
-                          json={'username': 'ruicoelho@ua.pt', 'password': '123456'})
-        json = r.json()
-        token = json['token']
-        r = requests.get("https://tqsapitests.herokuapp.com/profile/", headers={'Authorization': 'Bearer ' + token})
+        message = {
+            'email': request.user.email,
+            'iat': datetime.now(timezone.utc),
+            'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
+        }
+        token = jwt.encode(message, KEY, algorithm='HS512')
+        r = requests.get("https://tqsapitests.herokuapp.com/profile/",
+                         headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
         json = r.json()
         tparams = {
-            'row': json
+            'row': json,
+            'year': datetime.now().year,
         }
         return render(request, 'profile.html', tparams)
 
 
-def editprofile(request):
+def editProfile(request):
     if not request.user.is_authenticated:
         return redirect('login')
     else:
+        message = {
+            'email': request.user.email,
+            'iat': datetime.now(timezone.utc),
+            'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
+        }
+        token = jwt.encode(message, KEY, algorithm='HS512')
+        r = requests.get("https://tqsapitests.herokuapp.com/profile/",
+                         headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
+        json = r.json()
         tparams = {
-            'database': Profile.objects.filter(user=request.user),
-            'user': request.user
+            'row': json,
+            'user': request.user,
+            'year': datetime.now().year,
         }
         return render(request, 'editProfile.html', tparams)
 
+
 def updateProfile(request):
-    if request.method == 'POST':
-        if str(request.POST['user']) == str(request.user):
-            profiler = Profile.objects.get(user=request.user)
-            if 'nome' in request.POST:
-                profiler.nome = request.POST['nome']
-                profiler.save()
-            if 'morada' in request.POST:
-                profiler.morada = request.POST['zipcode']
-                profiler.save()
-            if 'zipcode' in request.POST:
-                profiler.zipcode = request.POST['zipcode']
-                profiler.save()
-            if 'pais' in request.POST:
-                profiler.pais = request.POST['pais']
-                profiler.save()
-            if 'picture' in request.FILES:
-                profiler.picture = request.FILES['picture']
-                profiler.save()
-            return redirect('profileedit')
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            message = {
+                'email': request.user.email,
+                'iat': datetime.now(timezone.utc),
+                'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
+            }
+            token = jwt.encode(message, KEY, algorithm='HS512')
+
+            try:
+                image = request.FILES['picture'].file.read()
+                b64pic = b64encode(image)
+                image = b64pic.decode("utf-8")
+
+            except Exception as e:
+                image = request.POST['photo']
+                print(e)
+
+            content = {
+                'name' : request.POST['name'],
+                'mail' : request.POST['email'],
+                'morada' : request.POST['address'],
+                'zipCode' : request.POST['zipCode'],
+                'city' : request.POST['city'],
+                'nif' : request.POST['nif'],
+                'photo' : image
+            }
+
+            r = requests.put("https://tqsapitests.herokuapp.com/profile/", json=content,
+                             headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
+
+            if r.status_code != 200:
+                messages.error(request, "Não foi possível atualizar o seu perfil.")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+            messages.info(request, "Perfil atualizado com sucesso.")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        else:
+            return HttpResponseForbidden()
+    else:
+        return redirect('login')
+
 
 def painel(request):
     if request.user.is_authenticated and request.user.is_superuser:
@@ -175,11 +243,13 @@ def painel(request):
     else:
         return redirect('home')
 
+
 def addProducts(request):
     if request.user.is_authenticated and request.user.is_superuser:
         return render(request, 'addItem.html')
     else:
         return redirect('home')
+
 
 def processAdd(request):
     if request.method == 'POST':
@@ -194,6 +264,7 @@ def processAdd(request):
     else:
         return redirect('home')
 
+
 def editProducts(request):
     if request.method == 'GET':
         if request.user.is_authenticated and request.user.is_superuser:
@@ -205,6 +276,7 @@ def editProducts(request):
             return redirect('home')
     else:
         return redirect('home')
+
 
 def processEdit(request):
     if request.method == 'POST':
@@ -224,6 +296,7 @@ def processEdit(request):
     else:
         return redirect('home')
 
+
 def removeProducts(request):
     if request.method == 'GET':
         if request.user.is_authenticated and request.user.is_superuser:
@@ -234,6 +307,7 @@ def removeProducts(request):
     else:
         return redirect('home')
 
+
 def searchAdmin(request):
     if request.method == 'GET':
         pesquisa = request.GET['search']
@@ -243,6 +317,7 @@ def searchAdmin(request):
         return render(request, 'searchAdmin.html', tparams)
     else:
         return redirect('home')
+
 
 def bought(request):
     if request.user.is_authenticated:
@@ -255,6 +330,7 @@ def bought(request):
         return redirect('login'
                         '')
 
+
 def boughtAdmin(request):
     if request.user.is_superuser and request.user.is_authenticated:
         tparams = {
@@ -265,11 +341,13 @@ def boughtAdmin(request):
     else:
         return redirect('home')
 
+
 def boughtSearch(request):
     if request.method == "GET" and 'search' in request.GET:
         if request.user.is_authenticated:
             tparams = {
-                "database": Encomenda.objects.filter(user=request.user, produtos__titulo__contains=request.GET['search']).order_by("-id"),
+                "database": Encomenda.objects.filter(user=request.user,
+                                                     produtos__titulo__contains=request.GET['search']).order_by("-id"),
                 "year": datetime.now().year
             }
             return render(request, "salesList.html", tparams)
@@ -278,8 +356,9 @@ def boughtSearch(request):
     else:
         return redirect('home')
 
+
 def boughtSearchAdmin(request):
-    if request.method == "GET" and 'search' in request.GET :
+    if request.method == "GET" and 'search' in request.GET:
         if request.user.is_authenticated and request.user.is_superuser:
             tparams = {
                 "database": Encomenda.objects.filter(produtos__titulo__contains=request.GET['search']).order_by("-id"),
@@ -290,6 +369,7 @@ def boughtSearchAdmin(request):
             return redirect('login')
     else:
         return redirect('home')
+
 
 def buyItem(request):
     if request.user.is_authenticated:
@@ -312,6 +392,7 @@ def buyItem(request):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     return redirect('login')
 
+
 def sendEmail(request):
     if request.method == 'POST':
         form = EmailForm(request.POST)
@@ -324,7 +405,8 @@ def sendEmail(request):
 
             if phone != None:
                 send_mail(subject='Contacto de ' + name,
-                          message= mensagem + "\nEste email foi enviado por: " + email + "\nContacto telefónico: " + str(phone),
+                          message=mensagem + "\nEste email foi enviado por: " + email + "\nContacto telefónico: " + str(
+                              phone),
                           from_email=os.getenv('EMAIL'),
                           recipient_list=[os.getenv('EMAIL_TO'), os.getenv('EMAIL'), email]
                           )
@@ -338,28 +420,32 @@ def sendEmail(request):
             messages.success(request, 'Email sent')
             return redirect('contact')
 
+
 def openCharts(request):
     if request.user.is_superuser:
         stock = Items.objects.all()
         lista = [['Items', 'Quantidade']]
         for i in stock:
             lista.append([i.titulo, i.quantidade])
-        return render(request, 'charts.html', {'lista':lista})
+        return render(request, 'charts.html', {'lista': lista})
     else:
         raise PermissionDenied()
+
 
 def analiseMes(request):
     if request.user.is_superuser:
         x = datetime.now()
-        vendas = Encomenda.objects.filter(data__month=x.month, data__year=x.year).values('produtos_id').annotate(num=Count('produtos'))
+        vendas = Encomenda.objects.filter(data__month=x.month, data__year=x.year).values('produtos_id').annotate(
+            num=Count('produtos'))
         lista = [['Item', 'Quantidade']]
         for i in vendas:
             nome = Items.objects.filter(id=i['produtos_id'])
             for u in nome:
                 lista.append([u.titulo, i['num']])
-        return render(request, 'analiseVendas.html', {'lista':lista})
+        return render(request, 'analiseVendas.html', {'lista': lista})
     else:
         raise PermissionDenied()
+
 
 def analise(request):
     if request.user.is_authenticated and not request.user.is_superuser:
@@ -413,25 +499,60 @@ def getFavourites(request):
         A view with all favorites for a user.
 
     """
-    r = requests.post("https://tqsapitests.herokuapp.com/authenticate", json={'username':'ruicoelho@ua.pt', 'password':'123456'})
-    json = r.json()
-    token = json['token']
-    r = requests.get("https://tqsapitests.herokuapp.com/favourite/", headers={'Authorization': 'Bearer ' + token})
-    if r.status_code != 200:
-        return FileNotFoundError()
-    ids = []
-    lista = []
-    lista.append(r.json())
-    for i in lista:
-        ids.append(i['id'])
+    if request.user.is_authenticated:
+        message = {
+            'email': request.user.email,
+            'iat': datetime.now(timezone.utc),
+            'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
+        }
+        token = jwt.encode(message, KEY, algorithm='HS512')
+        r = requests.get("https://tqsapitests.herokuapp.com/favourite/",
+                         headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
+        if r.status_code != 200:
+            return FileNotFoundError()
 
-    cars = []
-    for i in ids:
-        car = requests.get("https://tqsapitests.herokuapp.com/car/" + str(i))
-        cars.append(car.json())
+        try:
+            json = r.json()
+        except Exception as e:
+            print(e)
+            return render(request, 'favourite.html', {'database': []})
 
-    print(cars)
-    tparams = {
-        'database': cars
-    }
-    return render(request, 'favourite.html', tparams)
+        ids = []
+        lista = []
+        lista.append(json)
+        for i in lista:
+            ids.append(i['id'])
+
+        cars = []
+        for i in ids:
+            car = requests.get("https://tqsapitests.herokuapp.com/car/" + str(i))
+            cars.append(car.json())
+
+        tparams = {
+            'database': cars,
+            'year': datetime.now().year,
+        }
+        return render(request, 'favourite.html', tparams)
+    else:
+        return render('login')
+
+
+def deleteFavourite(request, favID):
+    if request.user.is_authenticated:
+        message = {
+            'email': request.user.email,
+            'iat': datetime.now(timezone.utc),
+            'exp': datetime.now(timezone.utc) + timedelta(minutes=1),
+        }
+        token = jwt.encode(message, KEY, algorithm='HS512')
+        r = requests.delete("https://tqsapitests.herokuapp.com/favourite/" + str(favID),
+                            headers={'Authorization': 'Bearer ' + token.decode("utf-8")})
+
+        if r.status_code != 200:
+            messages.error(request, "Não foi possível apagar o favorito.")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+        messages.info(request, "Favorito removido com sucesso.")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    else:
+        return redirect('login')

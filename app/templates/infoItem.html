@@ -88,7 +88,7 @@
                     <div class="card" style="width: 18rem;">
                         {% load static %}
                         <img class="card-img-top"
-                             src="{% static 'img/profile_pictures/-688509758/66734787_2427483087310004_3406724701492346880_o.jpg' %}"
+                             src="data:image/jpeg;base64,{{ seller.photo }}"
                              alt="Card image cap">
                         <div class="card-body">
                             <h5 class="card-title">Vendedor - {{ seller.name }}</h5>

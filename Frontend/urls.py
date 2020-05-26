@@ -29,7 +29,7 @@ urlpatterns = [
     path('infoItem/<int:carId>', views.getItem, name='infoitem'),
     path('search', views.search, name='search'),
     path('profile/', views.getProfile, name="profile"),
-    path('profileedit/', views.editprofile, name="profileedit"),
+    path('profileedit/', views.editProfile, name="profileedit"),
     path('updateProfile', views.updateProfile, name="updateProfile"),
     path('adminPanel/', views.painel, name='adminpanel'),
     path('additem/', views.addProducts, name='additem'),
@@ -47,4 +47,5 @@ urlpatterns = [
     path('analysisMonth/',views.analiseMes, name="analysisMonth"),
     path('evolutionAdmin/', views.evolucaoAdmin, name="evolutionadmin"),
     path('favourite/', views.getFavourites, name="favourite"),
+    path('delete/favourite/<int:favID>', views.deleteFavourite, name="delfavourite")
 ]
