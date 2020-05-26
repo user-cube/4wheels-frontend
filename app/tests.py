@@ -3,12 +3,12 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 
-class TestDefaultSuite():
-    def setup_method(self, method):
+class HomepageLoggedOut():
+    def setup_method(self):
         self.driver = webdriver.Chrome()
         self.vars = {}
 
-    def teardown_method(self, method):
+    def teardown_method(self):
         self.driver.quit()
 
     def test_untitled(self):
