@@ -28,6 +28,7 @@ jobs:
     - name: Install Chrome and Firefox
       run: |
         sudo apt install google-chrome-stable
+        sudo apt-get install firefox
     - name: Install ChromeDriver
       run: |
         CHROME_VERSION=$(google-chrome --version | cut -f 3 -d ' ' | cut -d '.' -f 1) \
