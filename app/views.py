@@ -85,19 +85,21 @@ def getItem(request, carId):
     if request.method == 'GET':
         r = requests.get("https://tqsapitests.herokuapp.com/car/" + str(carId))
         if r.status_code != 200:
+            print(r.status_code)
             return FileNotFoundError()
         json = r.json()
 
         r = requests.get("https://tqsapitests.herokuapp.com/profile/",
-                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
-
+                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(json['ownerMail'])})
         if r.status_code != 200:
+            print(r.status_code)
             return FileNotFoundError()
         tparams = {
             'row': json,
             'seller': r.json(),
             'year': datetime.now().year,
         }
+        print(tparams)
         return render(request, 'infoItem.html', tparams)
     else:
         return redirect('home')
