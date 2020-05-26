@@ -22,13 +22,13 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install Chrome and Firefox
-        run: |
-          sudo apt install google-chrome-stable
-          sudo apt-get install firefox
+      run: |
+        sudo apt install google-chrome-stable
+        sudo apt-get install firefox
     - name: Install chromedriver and geckodriver (Firefox Webdriver)
-        run: |
-          seleniumbase install chromedriver
-          seleniumbase install geckodriver
+      run: |
+        seleniumbase install chromedriver
+        seleniumbase install geckodriver
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
