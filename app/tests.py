@@ -8,6 +8,8 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from dotenv import load_dotenv
 import os
 import time
+EMAIL = os.getenv('LOGIN_EMAIL')
+PASSWORD = os.getenv('LOGIN_PASSWORD')
 
 #self.driver = webdriver.Chrome(ChromeDriverManager().install())
 
@@ -220,10 +222,10 @@ class TestLogin(TestCase):
         self.driver.find_element(By.LINK_TEXT, "Log in").click()
         # 4 | type | id=id_username | EMAIL
         self.driver.find_element(By.ID, "id_username").send_keys(
-            "mrrmoc@gmail.com")
+            EMAIL)
         # 5 | type | id=id_password | PASSWORD
         self.driver.find_element(By.ID, "id_password").send_keys(
-            "1234")
+            PASSWORD)
         # 6 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         time.sleep(20)
