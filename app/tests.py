@@ -241,7 +241,7 @@ class TestLogin():
         self.driver.find_element(By.CSS_SELECTOR, ".fa-envelope").click()
 
 
-class TestProfile(TestCase):
+class TestProfile():
     def setUp(self) -> None:
         self.driver = webdriver.Remote(
             command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
