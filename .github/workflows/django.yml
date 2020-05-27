@@ -31,6 +31,6 @@ jobs:
       run: |
         python manage.py test app
       env:
-        DJANGO_KEY : ${{ secrets.DJANGO_KEY }}
-        LOGIN_EMAIL : ${{ secrets.LOGIN_EMAIL }}
-        LOGIN_PASSWORD : ${{ secrets.LOGIN_PASSWORD }}
+          DJANGO_KEY : ${{ secrets.DJANGO_KEY }}
+          LOGIN_EMAIL : ${{ secrets.LOGIN_EMAIL }}
+          LOGIN_PASSWORD : ${{ secrets.LOGIN_PASSWORD }}
