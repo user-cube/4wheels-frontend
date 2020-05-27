@@ -5,6 +5,7 @@ import os
 
 load_dotenv()
 
+
 class Tokenizer:
     def __init__(self):
         """
@@ -24,6 +25,7 @@ class Tokenizer:
             a jwt with user email.
 
         """
+        print(self.key)
         message = {
             'email': email,
             'iat': datetime.now(timezone.utc),

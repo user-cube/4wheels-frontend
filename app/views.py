@@ -14,7 +14,6 @@ from app.tools.tokenizer import Tokenizer
 tokenizer = Tokenizer()
 
 
-
 def home(request):
     """
     Get homepage view.
@@ -81,21 +80,18 @@ def getItem(request, carId):
     if request.method == 'GET':
         r = requests.get("https://tqsapitests.herokuapp.com/car/" + str(carId))
         if r.status_code != 200:
-            print(r.status_code)
             return FileNotFoundError()
         json = r.json()
 
         r = requests.get("https://tqsapitests.herokuapp.com/profile/",
                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(json['ownerMail'])})
         if r.status_code != 200:
-            print(r.status_code)
             return FileNotFoundError()
         tparams = {
             'row': json,
             'seller': r.json(),
             'year': datetime.now().year,
         }
-        print(tparams)
         return render(request, 'infoItem.html', tparams)
     else:
         return redirect('home')
@@ -117,17 +113,20 @@ def search(request):
         tipo = request.GET['pesquisa']
         isOk = False
         if tipo == "brand":
-            r = requests.get("https://tqsapitests.herokuapp.com/car/brand/" + content)
+            r = requests.get(
+                "https://tqsapitests.herokuapp.com/car/brand/" + content)
             if r.status_code != 200:
                 return FileNotFoundError()
             isOk = True
         if tipo == "model":
-            r = requests.get("https://tqsapitests.herokuapp.com/car/model/" + content)
+            r = requests.get(
+                "https://tqsapitests.herokuapp.com/car/model/" + content)
             if r.status_code != 200:
                 return FileNotFoundError()
             isOk = True
         if tipo == "year":
-            r = requests.get("https://tqsapitests.herokuapp.com/car/year/" + content)
+            r = requests.get(
+                "https://tqsapitests.herokuapp.com/car/year/" + content)
             if r.status_code != 200:
                 return FileNotFoundError()
             isOk = True
@@ -172,6 +171,7 @@ def getProfile(request, edit):
     else:
         return redirect('login')
 
+
 def updateProfile(request):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -185,20 +185,21 @@ def updateProfile(request):
                 print(e)
 
             content = {
-                'name' : request.POST['name'],
-                'mail' : request.POST['email'],
-                'morada' : request.POST['address'],
-                'zipCode' : request.POST['zipCode'],
-                'city' : request.POST['city'],
-                'nif' : request.POST['nif'],
-                'photo' : image
+                'name': request.POST['name'],
+                'mail': request.POST['email'],
+                'morada': request.POST['address'],
+                'zipCode': request.POST['zipCode'],
+                'city': request.POST['city'],
+                'nif': request.POST['nif'],
+                'photo': image
             }
 
             r = requests.put("https://tqsapitests.herokuapp.com/profile/", json=content,
                              headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
             if r.status_code != 200:
-                messages.error(request, "Não foi possível atualizar o seu perfil.")
+                messages.error(
+                    request, "Não foi possível atualizar o seu perfil.")
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
             messages.info(request, "Perfil atualizado com sucesso.")
@@ -207,6 +208,7 @@ def updateProfile(request):
             return HttpResponseForbidden()
     else:
         return redirect('login')
+
 
 def getFavourites(request):
     """
@@ -238,7 +240,8 @@ def getFavourites(request):
 
         cars = []
         for i in ids:
-            car = requests.get("https://tqsapitests.herokuapp.com/car/" + str(i))
+            car = requests.get(
+                "https://tqsapitests.herokuapp.com/car/" + str(i))
             cars.append(car.json())
 
         tparams = {
