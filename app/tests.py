@@ -399,3 +399,131 @@ class TestFavouritesExisting():
         # 17 | click | css=.col-lg-12:nth-child(2) |
         self.driver.find_element(
             By.CSS_SELECTOR, ".col-lg-12:nth-child(2)").click()
+
+
+class TestEditProfile():
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(
+            command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_editProfile(self):
+        # Test name: EditProfile
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("http://localhost:8000/")
+        # 2 | setWindowSize | 1052x818 |
+        self.driver.set_window_size(1052, 818)
+        # 3 | click | linkText=Log in |
+        self.driver.find_element(By.LINK_TEXT, "Log in").click()
+        # 4 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 5 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 6 | doubleClick | id=id_username |
+        element = self.driver.find_element(By.ID, "id_username")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 7 | type | id=id_username | mrrmoc@gmail.com
+        self.driver.find_element(By.ID, "id_username").send_keys(EMAIL)
+        # 8 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 9 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 10 | doubleClick | id=id_password |
+        element = self.driver.find_element(By.ID, "id_password")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 11 | type | id=id_password | 1234
+        self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
+        # 12 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 13 | click | id=navbarDropdown |
+        self.driver.find_element(By.ID, "navbarDropdown").click()
+        # 14 | click | linkText=Perfil |
+        self.driver.find_element(By.LINK_TEXT, "Perfil").click()
+        # 15 | click | id=nome |
+        self.driver.find_element(By.ID, "nome").click()
+        # 16 | click | id=nome |
+        self.driver.find_element(By.ID, "nome").click()
+        # 17 | doubleClick | id=nome |
+        element = self.driver.find_element(By.ID, "nome")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 18 | click | id=morada |
+        self.driver.find_element(By.ID, "morada").click()
+        # 19 | click | id=morada |
+        self.driver.find_element(By.ID, "morada").click()
+        # 20 | doubleClick | id=morada |
+        element = self.driver.find_element(By.ID, "morada")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 21 | click | id=zipcode |
+        self.driver.find_element(By.ID, "zipcode").click()
+        # 22 | click | id=zipcode |
+        self.driver.find_element(By.ID, "zipcode").click()
+        # 23 | doubleClick | id=zipcode |
+        element = self.driver.find_element(By.ID, "zipcode")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 24 | click | id=pais |
+        self.driver.find_element(By.ID, "pais").click()
+        # 25 | click | id=pais |
+        self.driver.find_element(By.ID, "pais").click()
+        # 26 | doubleClick | id=pais |
+        element = self.driver.find_element(By.ID, "pais")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 27 | click | css=.form-group:nth-child(5) #pais |
+        self.driver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(5) #pais").click()
+        # 28 | click | css=.form-group:nth-child(5) #pais |
+        self.driver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(5) #pais").click()
+        # 29 | doubleClick | css=.form-group:nth-child(5) #pais |
+        element = self.driver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(5) #pais")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 30 | click | id=email |
+        self.driver.find_element(By.ID, "email").click()
+        # 31 | click | id=email |
+        self.driver.find_element(By.ID, "email").click()
+        # 32 | doubleClick | id=email |
+        element = self.driver.find_element(By.ID, "email")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 33 | click | linkText=Editar perfil |
+        self.driver.find_element(By.LINK_TEXT, "Editar perfil").click()
+        # 34 | click | css=.row |
+        self.driver.find_element(By.CSS_SELECTOR, ".row").click()
+        # 35 | type | id=name | Rui Coelho
+        self.driver.find_element(By.ID, "name").send_keys("Rui Coelho")
+        # 36 | click | css=.form-group:nth-child(4) |
+        self.driver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(4)").click()
+        # 37 | click | id=morada |
+        self.driver.find_element(By.ID, "morada").click()
+        # 38 | click | css=.row |
+        self.driver.find_element(By.CSS_SELECTOR, ".row").click()
+        # 39 | type | id=morada | Rua dos Doutores
+        self.driver.find_element(By.ID, "morada").send_keys("Rua dos Doutores")
+        # 40 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 41 | click | css=.form-group:nth-child(1) > .col-lg-6 |
+        self.driver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(1) > .col-lg-6").click()
+        # 42 | click | css=.col-lg-10 |
+        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-10").click()
+        # 43 | click | id=morada |
+        self.driver.find_element(By.ID, "morada").click()
+        # 44 | click | id=morada |
+        self.driver.find_element(By.ID, "morada").click()
+        # 45 | doubleClick | id=morada |
+        element = self.driver.find_element(By.ID, "morada")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 46 | click | id=morada |
+        self.driver.find_element(By.ID, "morada").click()
+        # 47 | click | id=navbarDropdown |
+        self.driver.find_element(By.ID, "navbarDropdown").click()
+        # 48 | click | linkText=Logout |
+        self.driver.find_element(By.LINK_TEXT, "Logout").click()

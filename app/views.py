@@ -206,9 +206,9 @@ def updateProfile(request):
 
             content = {
                 'name': request.POST['name'],
-                'mail': request.POST['email'],
-                'morada': request.POST['address'],
-                'zipCode': request.POST['zipCode'],
+                'mail': request.user.email,
+                'address': request.POST['morada'],
+                'zipCode': request.POST['zipcode'],
                 'city': request.POST['city'],
                 'nif': request.POST['nif'],
                 'photo': image
@@ -223,7 +223,7 @@ def updateProfile(request):
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
             messages.info(request, "Perfil atualizado com sucesso.")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+            return redirect('profile', edit="view")
         else:
             return HttpResponseForbidden()
     else:

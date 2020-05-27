@@ -1,6 +1,13 @@
 {% extends 'layout.html' %}
 
 {% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags %}
+                <script>alert("{{ message }}")</script> {% endif %}
+
+        {% endfor %}
+    {% endif %}
     <div class="row">
         <div class="col-lg-2">
             {% load static %}
@@ -57,6 +64,15 @@
                         <div class="input-group">
                             <input id="pais" name="pais" type="text"
                                    placeholder="País" class="form-control input-lg" value="{{ row.nif }}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Email</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="email" name="email" type="text"
+                                   placeholder="Email" class="form-control input-lg" value="{{ request.user.email }}" readonly>
                         </div>
                     </div>
                 </div>
