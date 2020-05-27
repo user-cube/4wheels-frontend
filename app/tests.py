@@ -4,10 +4,11 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 class HomepageLoggedOut(TestCase):
     def setUp(self) -> None:
-        self.driver = webdriver.Chrome(ChromeDriverManager().install())
+        self.driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
         self.vars = {}
 
     def tearDown(self) -> None:
