@@ -127,7 +127,7 @@ def getItem(request, carId):
             'row': json,
             'seller': seller,
             'year': datetime.now().year,
-            'isFav' : isFav
+            'isFav': isFav
         }
         return render(request, 'infoItem.html', tparams)
     else:
@@ -324,10 +324,11 @@ def deleteFavourite(request, favID):
     else:
         return redirect('login')
 
+
 def addFavourites(request, favID):
     if request.user.is_authenticated:
         r = requests.post("https://tqsapitests.herokuapp.com/favourite/" + str(favID),
-                            headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
         if r.status_code != 200:
             messages.error(request, "Erro ao adicionar favorito")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
@@ -335,6 +336,7 @@ def addFavourites(request, favID):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     else:
         return redirect('login')
+
 
 def sellerPanel(request):
     if request.user.is_authenticated:
@@ -354,5 +356,21 @@ def sellerPanel(request):
             'database': lista
         }
         return render(request, 'sellerPanel.html', tparams)
+    else:
+        return redirect('login')
+
+
+def deleteCarFromSale(request, carID):
+    if request.user.is_authenticated:
+        r = requests.delete("https://tqsapitests.herokuapp.com/car/" + str(carID),
+                            headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+        if r.status_code != 200:
+            messages.error(request, "Erro ao apagar item.")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+        messages.info(request, "Item apagado com sucesso.")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
     else:
         return redirect('login')

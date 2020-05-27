@@ -32,5 +32,6 @@ urlpatterns = [
     path('favourite/', views.getFavourites, name="favourite"),
     path('favourites/add/<int:favID>', views.addFavourites, name="addfavourite"),
     path('delete/favourite/<int:favID>', views.deleteFavourite, name="delfavourite"),
-    path('seller/', views.sellerPanel, name="sellerpanel")
+    path('seller/', views.sellerPanel, name="sellerpanel"),
+    path('seller/delete/<int:carID>', views.deleteCarFromSale, name="sellerdelete"),
 ]
