@@ -198,8 +198,8 @@ class TestSearchBarTest(TestCase):
 
 class TestLogin(TestCase):
     def setUp(self) -> None:
-        self.driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub',
-                                       desired_capabilities=DesiredCapabilities.CHROME)
+        self.driver = webdriver.Remote(
+            command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
         self.vars = {}
 
     def tearDown(self) -> None:
@@ -224,7 +224,7 @@ class TestLogin(TestCase):
             os.getenv('LOGIN_PASSWORD'))
         # 6 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        time.sleep(20)
+        time.sleep(60)
         # 7 | click | linkText=Ver mais |
         self.driver.find_element(By.LINK_TEXT, "Ver mais").click()
         # 8 | click | css=.card-body |
