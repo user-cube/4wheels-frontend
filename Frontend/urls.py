@@ -31,5 +31,6 @@ urlpatterns = [
     path('updateProfile', views.updateProfile, name="updateProfile"),
     path('favourite/', views.getFavourites, name="favourite"),
     path('favourites/add/<int:favID>', views.addFavourites, name="addfavourite"),
-    path('delete/favourite/<int:favID>', views.deleteFavourite, name="delfavourite")
+    path('delete/favourite/<int:favID>', views.deleteFavourite, name="delfavourite"),
+    path('seller/', views.sellerPanel, name="sellerpanel")
 ]
