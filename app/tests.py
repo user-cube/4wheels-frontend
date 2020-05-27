@@ -218,12 +218,10 @@ class TestLogin(TestCase):
         self.driver.find_element(By.LINK_TEXT, "Log in").click()
         # 4 | type | id=id_username | EMAIL
         self.driver.find_element(By.ID, "id_username").send_keys(
-            os.getenv('LOGIN_EMAIL'))
-        print(os.getenv('LOGIN_EMAIL'))
+            "mrrmoc@gmail.con")
         # 5 | type | id=id_password | PASSWORD
         self.driver.find_element(By.ID, "id_password").send_keys(
-            os.getenv('LOGIN_PASSWORD'))
-        print(os.getenv('LOGIN_PASSWORD'))
+            "1234")
         # 6 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         time.sleep(20)
