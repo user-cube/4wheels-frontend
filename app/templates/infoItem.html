@@ -22,13 +22,23 @@
             <div class="col-lg-12">
                 <h1>{{ row.brand }} {{ row.model }}</h1>
             </div>
-            {% if request.user.is_authenticated %}
+            {% if request.user.is_authenticated and not isFav %}
                 <div class="col-lg-12" style="text-align: left">
-                    <form action="/favorites/add" method='post'>
+                    <form action="/favourites/add/{{ row.id }}" method='post'>
                         {% csrf_token %}
                         <input name='id' value="{{ row.id }}" hidden>
-                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure?');">
+                        <button type="submit" class="btn btn-outline-danger">
                             <i class="fa fa-heart"> <strong>Add to favorites</strong></i></button>
+                    </form>
+                </div>
+            {% endif %}
+            {% if request.user.is_authenticated and isFav %}
+                <div class="col-lg-12" style="text-align: left">
+                    <form action="/delete/favourite/{{ row.id }}" method='post'>
+                        {% csrf_token %}
+                        <input name='id' value="{{ row.id }}" hidden>
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="fa fa-heart"> <strong>Remove from favorites</strong></i></button>
                     </form>
                 </div>
             {% endif %}
@@ -85,7 +95,6 @@
                 </div>
                 <div class="col-lg-3">
                     <div class="card" style="width: 18rem;">
-                        {% load static %}
                         <img class="card-img-top"
                              src="data:image/jpeg;base64,{{ seller.photo }}"
                              alt="Card image cap">
@@ -98,7 +107,8 @@
                                 <a href="#" class="btn btn-primary"><i class="fa fa-phone"> {{ seller.contact }}</i></a>
                             {% else %}
                                 <p>Tem de efetuar login para ver as informações do vendedor.</p>
-                                <a href="{% url 'login' %}" class="btn btn-primary"><i class="fa fa-sign-in-alt"> Login</i></a>
+                                <a href="{% url 'login' %}" class="btn btn-primary"><i class="fa fa-sign-in-alt">
+                                    Login</i></a>
                             {% endif %}
                         </div>
                     </div>

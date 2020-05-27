@@ -26,7 +26,6 @@ class Tokenizer:
             a jwt with user email.
 
         """
-        print(self.key)
         message = {
             'email': email,
             'iat': datetime.now(timezone.utc),
@@ -37,9 +36,9 @@ class Tokenizer:
 
     def checkUserType(self, request):
         if 'user_type' not in request.session.keys():
-            return False;
+            return False
         else:
-            return True;
+            return True
 
     def getType(self, request):
         r = requests.get("https://tqsapitests.herokuapp.com/profile/",

@@ -98,17 +98,36 @@ def getItem(request, carId):
     if request.method == 'GET':
         r = requests.get("https://tqsapitests.herokuapp.com/car/" + str(carId))
         if r.status_code != 200:
-            return FileNotFoundError()
+            print("Car " + str(r.status_code))
+            return HttpResponseNotFound()
         json = r.json()
-
         r = requests.get("https://tqsapitests.herokuapp.com/profile/",
                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(json['ownerMail'])})
         if r.status_code != 200:
-            return FileNotFoundError()
+            print("Profile " + str(r.status_code))
+            return HttpResponseNotFound()
+        seller = r.json()
+        r = requests.get("https://tqsapitests.herokuapp.com/favourite/",
+                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+        if r.status_code != 200:
+            print("Favourite " + str(r.status_code))
+            return HttpResponseNotFound()
+
+        isFav = False
+        try:
+            favs = r.json()
+            for i in favs:
+                if i['car'] == carId:
+                    isFav = True
+        except Exception as e:
+            print(e)
+            isFav = False
+
         tparams = {
             'row': json,
-            'seller': r.json(),
+            'seller': seller,
             'year': datetime.now().year,
+            'isFav' : isFav
         }
         return render(request, 'infoItem.html', tparams)
     else:
@@ -134,19 +153,19 @@ def search(request):
             r = requests.get(
                 "https://tqsapitests.herokuapp.com/car/brand/" + content)
             if r.status_code != 200:
-                return FileNotFoundError()
+                return HttpResponseNotFound()
             isOk = True
         if tipo == "model":
             r = requests.get(
                 "https://tqsapitests.herokuapp.com/car/model/" + content)
             if r.status_code != 200:
-                return FileNotFoundError()
+                return HttpResponseNotFound()
             isOk = True
         if tipo == "year":
             r = requests.get(
                 "https://tqsapitests.herokuapp.com/car/year/" + content)
             if r.status_code != 200:
-                return FileNotFoundError()
+                return HttpResponseNotFound()
             isOk = True
         if isOk:
             json = r.json()
@@ -250,7 +269,7 @@ def getFavourites(request):
         r = requests.get("https://tqsapitests.herokuapp.com/favourite/",
                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
         if r.status_code != 200:
-            return FileNotFoundError()
+            return HttpResponseNotFound()
 
         try:
             json = r.json()
@@ -259,16 +278,19 @@ def getFavourites(request):
             return render(request, 'favourite.html', {'database': []})
 
         ids = []
-        lista = []
-        lista.append(json)
-        for i in lista:
-            ids.append(i['id'])
+        for i in json:
+            ids.append(i['car'])
 
         cars = []
         for i in ids:
-            car = requests.get(
-                "https://tqsapitests.herokuapp.com/car/" + str(i))
-            cars.append(car.json())
+            print(i)
+            string = "https://tqsapitests.herokuapp.com/car/" + str(i)
+            print(string)
+            car = requests.get(string)
+            if car.status_code == 200:
+                print(car.text)
+                cars.append(car.json())
+                print(cars)
 
         tparams = {
             'database': cars,
@@ -298,6 +320,18 @@ def deleteFavourite(request, favID):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
         messages.info(request, "Favorito removido com sucesso.")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    else:
+        return redirect('login')
+
+def addFavourites(request, favID):
+    if request.user.is_authenticated:
+        r = requests.post("https://tqsapitests.herokuapp.com/favourite/" + str(favID),
+                            headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+        if r.status_code != 200:
+            messages.error(request, "Erro ao adicionar favorito")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     else:
         return redirect('login')
