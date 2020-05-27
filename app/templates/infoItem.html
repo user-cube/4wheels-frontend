@@ -24,7 +24,7 @@
             </div>
             {% if request.user.is_authenticated %}
                 <div class="col-lg-12" style="text-align: left">
-                    <form action="{% url 'buyitem' %}" method='post'>
+                    <form action="/favorites/add" method='post'>
                         {% csrf_token %}
                         <input name='id' value="{{ row.id }}" hidden>
                         <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure?');">
