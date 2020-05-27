@@ -428,7 +428,7 @@ class TestEditProfile():
         actions = ActionChains(self.driver)
         actions.double_click(element).perform()
         # 7 | type | id=id_username | mrrmoc@gmail.com
-        self.driver.find_element(By.ID, "id_username").send_keys("mrrmoc@gmail.com")
+        self.driver.find_element(By.ID, "id_username").send_keys(EMAIL)
         # 8 | click | id=id_password |
         self.driver.find_element(By.ID, "id_password").click()
         # 9 | click | id=id_password |
@@ -438,7 +438,7 @@ class TestEditProfile():
         actions = ActionChains(self.driver)
         actions.double_click(element).perform()
         # 11 | type | id=id_password | 1234
-        self.driver.find_element(By.ID, "id_password").send_keys("1234")
+        self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
         # 12 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         # 13 | click | id=navbarDropdown |
