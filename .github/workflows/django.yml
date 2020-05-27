@@ -23,8 +23,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Start selenoid
       uses: Xotabu4/selenoid-github-action@v1
-      - uses: actions/checkout@v1
-      - run: npm ci
+    - uses: actions/checkout@v1
+    - run: npm ci
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
