@@ -21,8 +21,10 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Start Selenoid Server
-      run: sudo apt-get install chromium-chromedriver
+    - name: Start selenoid
+      uses: Xotabu4/selenoid-github-action@v1
+      - uses: actions/checkout@v1
+      - run: npm ci
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
