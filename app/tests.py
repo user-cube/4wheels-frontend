@@ -306,3 +306,96 @@ class TestProfile():
         self.driver.find_element(By.ID, "navbarDropdown").click()
         # 22 | click | linkText=Logout |
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
+
+
+class TestFavourtiesNone():
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(
+            command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_favourtiesNone(self):
+        # Test name: FavourtiesNone
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
+        # 2 | setWindowSize | 1552x848 |
+        self.driver.set_window_size(1552, 848)
+        # 3 | click | linkText=Log in |
+        self.driver.find_element(By.LINK_TEXT, "Log in").click()
+        # 4 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 5 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 6 | doubleClick | id=id_username |
+        element = self.driver.find_element(By.ID, "id_username")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 7 | type | id=id_username | mrrmoc@gmail.com
+        self.driver.find_element(
+            By.ID, "id_username").send_keys(EMAIL)
+        # 8 | type | id=id_password | 1234
+        self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
+        # 9 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 10 | click | linkText=Favourites |
+        self.driver.find_element(By.LINK_TEXT, "Favourites").click()
+        # 11 | click | css=h1 |
+        self.driver.find_element(By.CSS_SELECTOR, "h1").click()
+        # 12 | click | css=p:nth-child(1) |
+        self.driver.find_element(By.CSS_SELECTOR, "p:nth-child(1)").click()
+
+
+class TestFavouritesExisting():
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(
+            command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_favouritesExisting(self):
+        # Test name: FavouritesExisting
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
+        # 2 | setWindowSize | 1053x817 |
+        self.driver.set_window_size(1053, 817)
+        # 3 | click | linkText=Log in |
+        self.driver.find_element(By.LINK_TEXT, "Log in").click()
+        # 4 | click | css=.row > .col-lg-12:nth-child(1) |
+        self.driver.find_element(
+            By.CSS_SELECTOR, ".row > .col-lg-12:nth-child(1)").click()
+        # 5 | type | id=id_username | mrrmoc@gmail.com
+        self.driver.find_element(EMAIL)
+        # 6 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 7 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 8 | doubleClick | id=id_password |
+        element = self.driver.find_element(By.ID, "id_password")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 9 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 10 | type | id=id_password | 1234
+        self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
+        # 11 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 12 | click | linkText=Favourites |
+        self.driver.find_element(By.LINK_TEXT, "Favourites").click()
+        # 13 | click | css=h1 |
+        self.driver.find_element(By.CSS_SELECTOR, "h1").click()
+        # 14 | click | css=.btn-primary |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn-primary").click()
+        # 15 | click | linkText=Favourites |
+        self.driver.find_element(By.LINK_TEXT, "Favourites").click()
+        # 16 | click | css=.fa-trash |
+        self.driver.find_element(By.CSS_SELECTOR, ".fa-trash").click()
+        # 17 | click | css=.col-lg-12:nth-child(2) |
+        self.driver.find_element(
+            By.CSS_SELECTOR, ".col-lg-12:nth-child(2)").click()

@@ -77,6 +77,17 @@ def successRegister(request):
 
 
 def getItem(request, carId):
+    """
+    Get information for a particular item.
+    Args:
+        request: actual request.
+        carId: car id to display
+        information
+
+    Returns:
+        the information for a
+        specific car id.
+    """
     if request.method == 'GET':
         r = requests.get("https://tqsapitests.herokuapp.com/car/" + str(carId))
         if r.status_code != 200:
@@ -173,6 +184,15 @@ def getProfile(request, edit):
 
 
 def updateProfile(request):
+    """
+    Update profile information.
+    Args:
+        request: actual request.
+
+    Returns:
+        the profile edited or an
+        error message.
+    """
     if request.user.is_authenticated:
         if request.method == "POST":
             try:
@@ -218,7 +238,6 @@ def getFavourites(request):
 
     Returns:
         A view with all favorites for a user.
-
     """
     if request.user.is_authenticated:
         r = requests.get("https://tqsapitests.herokuapp.com/favourite/",
@@ -254,6 +273,15 @@ def getFavourites(request):
 
 
 def deleteFavourite(request, favID):
+    """
+    Delete a item from favourite list.
+    Args:
+        request:actual request.
+        favID: favourite (item) id.
+
+    Returns:
+        the list of the favourite items.
+    """
     if request.user.is_authenticated:
         r = requests.delete("https://tqsapitests.herokuapp.com/favourite/" + str(favID),
                             headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
