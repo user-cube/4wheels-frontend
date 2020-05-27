@@ -3,11 +3,11 @@ from django.test import TestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-"""
+from webdriver_manager.chrome import ChromeDriverManager
+
 class HomepageLoggedOut(TestCase):
     def setUp(self) -> None:
-        self.driver = webdriver.Chrome()
+        self.driver = webdriver.Chrome(ChromeDriverManager().install())
         self.vars = {}
 
     def tearDown(self) -> None:
@@ -17,7 +17,7 @@ class HomepageLoggedOut(TestCase):
         # Test name: Untitled
         # Step # | name | target | value
         # 1 | open | / |
-        self.driver.get("http://localhost:8000/")
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
         # 2 | setWindowSize | 1552x849 |
         self.driver.set_window_size(1552, 849)
         # 3 | click | id=navbarDefault |
@@ -110,11 +110,10 @@ class HomepageLoggedOut(TestCase):
         self.driver.find_element(By.CSS_SELECTOR, ".card-body").click()
         # 38 | click | css=.fa |
         self.driver.find_element(By.CSS_SELECTOR, ".fa").click()
-"""
-"""
+
 class TestSearchBarTest(TestCase):
     def setUp(self) -> None:
-        self.driver = webdriver.Chrome()
+        self.driver = webdriver.Chrome(ChromeDriverManager().install())
         self.vars = {}
 
     def tearDown(self) -> None:
@@ -124,7 +123,7 @@ class TestSearchBarTest(TestCase):
         # Test name: Untitled
         # Step # | name | target | value
         # 1 | open | / |
-        self.driver.get("http://localhost:8000/")
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
         # 2 | setWindowSize | 1552x848 |
         self.driver.set_window_size(1552, 848)
         # 3 | click | name=search |
@@ -159,101 +158,3 @@ class TestSearchBarTest(TestCase):
         self.driver.find_element(By.CSS_SELECTOR, ".example > button").click()
         # 18 | click | css=.col-md-3:nth-child(2) .card-body |
         self.driver.find_element(By.CSS_SELECTOR, ".col-md-3:nth-child(2) .card-body").click()
-"""
-
-class TestDefaultSuite(TestCase):
-    def setUp(self) -> None:
-        self.driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub',
-                                       desired_capabilities=DesiredCapabilities.CHROME)
-        self.vars = {}
-
-    def tearDown(self) -> None:
-        self.driver.quit()
-
-    def test_homePageTest(self):
-        # Test name: HomePageTest
-        # Step # | name | target | value
-        # 1 | open | / |
-        self.driver.get("http://localhost:8000/")
-        # 2 | setWindowSize | 1552x849 |
-        self.driver.set_window_size(1552, 849)
-        # 3 | mouseDownAt | css=.navbar > .container | 152,17
-        element = self.driver.find_element(By.CSS_SELECTOR, ".navbar > .container")
-        actions = ActionChains(self.driver)
-        actions.move_to_element(element).click_and_hold().perform()
-        # 4 | mouseMoveAt | css=.navbar > .container | 152,17
-        element = self.driver.find_element(By.CSS_SELECTOR, ".navbar > .container")
-        actions = ActionChains(self.driver)
-        actions.move_to_element(element).perform()
-        # 5 | mouseUpAt | css=.navbar > .container | 152,17
-        element = self.driver.find_element(By.CSS_SELECTOR, ".navbar > .container")
-        actions = ActionChains(self.driver)
-        actions.move_to_element(element).release().perform()
-        # 6 | click | css=.navbar > .container |
-        self.driver.find_element(By.CSS_SELECTOR, ".navbar > .container").click()
-        # 7 | click | css=.navbar |
-        self.driver.find_element(By.CSS_SELECTOR, ".navbar").click()
-        # 8 | click | id=navbarDefault |
-        self.driver.find_element(By.ID, "navbarDefault").click()
-        # 9 | click | id=navbarDefault |
-        self.driver.find_element(By.ID, "navbarDefault").click()
-        # 10 | click | linkText=Ver mais |
-        self.driver.find_element(By.LINK_TEXT, "Ver mais").click()
-        # 11 | click | css=.col-lg-12:nth-child(2) th:nth-child(1) |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(2) th:nth-child(1)").click()
-        # 12 | click | css=.col-lg-12:nth-child(2) th:nth-child(1) |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(2) th:nth-child(1)").click()
-        # 13 | doubleClick | css=.col-lg-12:nth-child(2) th:nth-child(1) |
-        element = self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(2) th:nth-child(1)")
-        actions = ActionChains(self.driver)
-        actions.double_click(element).perform()
-        # 14 | click | css=.col-lg-12:nth-child(2) th:nth-child(2) |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(2) th:nth-child(2)").click()
-        # 15 | click | css=.col-lg-12:nth-child(2) th:nth-child(2) |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(2) th:nth-child(2)").click()
-        # 16 | doubleClick | css=.col-lg-12:nth-child(2) th:nth-child(2) |
-        element = self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(2) th:nth-child(2)")
-        actions = ActionChains(self.driver)
-        actions.double_click(element).perform()
-        # 17 | click | css=.col-lg-12:nth-child(2) th:nth-child(3) |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(2) th:nth-child(3)").click()
-        # 18 | click | css=.col-lg-12:nth-child(2) th:nth-child(3) |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(2) th:nth-child(3)").click()
-        # 19 | doubleClick | css=.col-lg-12:nth-child(2) th:nth-child(3) |
-        element = self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(2) th:nth-child(3)")
-        actions = ActionChains(self.driver)
-        actions.double_click(element).perform()
-        # 20 | click | css=th:nth-child(4) |
-        self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(4)").click()
-        # 21 | click | css=th:nth-child(4) |
-        self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(4)").click()
-        # 22 | doubleClick | css=th:nth-child(4) |
-        element = self.driver.find_element(By.CSS_SELECTOR, "th:nth-child(4)")
-        actions = ActionChains(self.driver)
-        actions.double_click(element).perform()
-        # 23 | click | css=.col-lg-12:nth-child(3) > .table th:nth-child(3) |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(3) > .table th:nth-child(3)").click()
-        # 24 | click | css=.col-lg-12:nth-child(3) > .table th:nth-child(3) |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(3) > .table th:nth-child(3)").click()
-        # 25 | doubleClick | css=.col-lg-12:nth-child(3) > .table th:nth-child(3) |
-        element = self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(3) > .table th:nth-child(3)")
-        actions = ActionChains(self.driver)
-        actions.double_click(element).perform()
-        # 26 | click | css=.col-lg-12:nth-child(3) > .table th:nth-child(2) |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(3) > .table th:nth-child(2)").click()
-        # 27 | click | css=.col-lg-12:nth-child(3) > .table th:nth-child(2) |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(3) > .table th:nth-child(2)").click()
-        # 28 | doubleClick | css=.col-lg-12:nth-child(3) > .table th:nth-child(2) |
-        element = self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(3) > .table th:nth-child(2)")
-        actions = ActionChains(self.driver)
-        actions.double_click(element).perform()
-        # 29 | click | css=.col-lg-12:nth-child(3) > .table th:nth-child(1) |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(3) > .table th:nth-child(1)").click()
-        # 30 | click | css=.col-lg-12:nth-child(3) > .table th:nth-child(1) |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(3) > .table th:nth-child(1)").click()
-        # 31 | doubleClick | css=.col-lg-12:nth-child(3) > .table th:nth-child(1) |
-        element = self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12:nth-child(3) > .table th:nth-child(1)")
-        actions = ActionChains(self.driver)
-        actions.double_click(element).perform()
-        # 32 | click | css=.card-body |
-        self.driver.find_element(By.CSS_SELECTOR, ".card-body").click()
