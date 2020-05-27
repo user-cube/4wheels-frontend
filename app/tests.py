@@ -216,12 +216,14 @@ class TestLogin(TestCase):
         self.driver.set_window_size(1552, 849)
         # 3 | click | linkText=Log in |
         self.driver.find_element(By.LINK_TEXT, "Log in").click()
-        # 4 | type | id=id_username | mrrmoc@gmail.com
+        # 4 | type | id=id_username | EMAIL
         self.driver.find_element(By.ID, "id_username").send_keys(
             os.getenv('LOGIN_EMAIL'))
-        # 5 | type | id=id_password | 1234
+        print(os.getenv('LOGIN_EMAIL'))
+        # 5 | type | id=id_password | PASSWORD
         self.driver.find_element(By.ID, "id_password").send_keys(
             os.getenv('LOGIN_PASSWORD'))
+        print(os.getenv('LOGIN_PASSWORD'))
         # 6 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         time.sleep(20)
