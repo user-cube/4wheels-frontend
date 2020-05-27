@@ -3,7 +3,7 @@ from django.test import TestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-#from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from dotenv import load_dotenv
 import os
@@ -164,7 +164,7 @@ class TestSearchBarTest(TestCase):
         self.driver.find_element(By.CSS_SELECTOR, ".col-md-3:nth-child(2) .card-body").click()
 
 
-class LoginTest(TestCase):
+class TestLogin():
     def setUp(self) -> None:
         self.driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub',
                                        desired_capabilities=DesiredCapabilities.CHROME)
@@ -174,6 +174,7 @@ class LoginTest(TestCase):
         self.driver.quit()
 
     def test_loginTest(self):
+        import time
         load_dotenv()
         # Test name: LoginTest
         # Step # | name | target | value
@@ -189,27 +190,16 @@ class LoginTest(TestCase):
         self.driver.find_element(By.ID, "id_password").send_keys(os.getenv('LOGIN_PASSWORD'))
         # 6 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        # 7 | click | css=.navbar |
-        self.driver.find_element(By.CSS_SELECTOR, ".navbar").click()
-        # 8 | click | css=.col-md-3:nth-child(1) .card-body |
-        self.driver.find_element(By.CSS_SELECTOR, ".col-md-3:nth-child(1) .card-body").click()
-        # 9 | click | linkText=Ver mais |
+        time.sleep(20)
+        # 7 | click | linkText=Ver mais |
         self.driver.find_element(By.LINK_TEXT, "Ver mais").click()
-        # 10 | mouseDownAt | css=main | 176,591
-        element = self.driver.find_element(By.CSS_SELECTOR, "main")
-        actions = ActionChains(self.driver)
-        actions.move_to_element(element).click_and_hold().perform()
-        # 11 | mouseMoveAt | css=main | 176,591
-        element = self.driver.find_element(By.CSS_SELECTOR, "main")
-        actions = ActionChains(self.driver)
-        actions.move_to_element(element).perform()
-        # 12 | mouseUpAt | css=main | 176,591
-        element = self.driver.find_element(By.CSS_SELECTOR, "main")
-        actions = ActionChains(self.driver)
-        actions.move_to_element(element).release().perform()
-        # 13 | click | css=main |
-        self.driver.find_element(By.CSS_SELECTOR, "main").click()
-        # 14 | click | css=.card-body |
+        # 8 | click | css=.card-body |
         self.driver.find_element(By.CSS_SELECTOR, ".card-body").click()
-        # 15 | click | css=.btn-primary:nth-child(3) |
-        self.driver.find_element(By.CSS_SELECTOR, ".btn-primary:nth-child(3)").click()
+        # 10 | click | css=strong |
+        self.driver.find_element(By.CSS_SELECTOR, "strong").click()
+        # 11 | assertConfirmation | Are you sure? |
+        assert self.driver.switch_to.alert.text == "Are you sure?"
+        # 12 | webdriverChooseCancelOnVisibleConfirmation |  |
+        self.driver.switch_to.alert.dismiss()
+        # 13 | click | css=.fa-envelope |
+        self.driver.find_element(By.CSS_SELECTOR, ".fa-envelope").click()
