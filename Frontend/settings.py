@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app.apps.AppConfig',
-    'app.templatetags.safeTools',
 ]
 
 MIDDLEWARE = [
@@ -130,4 +129,4 @@ EMAIL_HOST_PASSWORD = os.getenv('PASS')
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-django_heroku.settings(locals())
+django_heroku.settings(locals(), test_runner=False)

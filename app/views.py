@@ -1,15 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate
-from django.core.exceptions import PermissionDenied
-from django.core.mail import send_mail
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, redirect
 
 # Create your views here.
-from app.forms import SignUpForm, EmailForm
-from app.models import Items, Profile, Encomenda
-import os
-from django.db.models import Count, F, Sum
+from app.forms import SignUpForm
+from app.models import Profile
 import requests
 from datetime import datetime
 from base64 import b64encode
@@ -63,7 +59,7 @@ def signup(request):
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
+            authenticate(username=username, password=raw_password)
             profiler = Profile(nome=request.POST['first_name'],
                                user=request.POST['username'],
                                picture='app/static/img/default.jpg',
@@ -119,27 +115,31 @@ def search(request):
     if request.method == 'GET':
         content = request.GET['search']
         tipo = request.GET['pesquisa']
+        isOk = False
         if tipo == "brand":
             r = requests.get("https://tqsapitests.herokuapp.com/car/brand/" + content)
             if r.status_code != 200:
                 return FileNotFoundError()
+            isOk = True
         if tipo == "model":
             r = requests.get("https://tqsapitests.herokuapp.com/car/model/" + content)
             if r.status_code != 200:
                 return FileNotFoundError()
+            isOk = True
         if tipo == "year":
             r = requests.get("https://tqsapitests.herokuapp.com/car/year/" + content)
             if r.status_code != 200:
                 return FileNotFoundError()
+            isOk = True
+        if isOk:
+            json = r.json()
+            tparams = {
+                'database': json,
+                'year': datetime.now().year,
+            }
+            return render(request, 'index.html', tparams)
         else:
             return render(request, 'index.html', {'database': [], 'year': datetime.now().year})
-
-        json = r.json()
-        tparams = {
-            'database': json,
-            'year': datetime.now().year,
-        }
-        return render(request, 'index.html', tparams)
     else:
         return redirect('home')
 
