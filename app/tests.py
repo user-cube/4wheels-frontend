@@ -7,6 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from dotenv import load_dotenv
 import os
+import time
 
 #self.driver = webdriver.Chrome(ChromeDriverManager().install())
 
@@ -206,8 +207,9 @@ class TestLogin(TestCase):
         self.driver.quit()
 
     def test_loginTest(self):
-        import time
+        
         load_dotenv()
+        
         # Test name: LoginTest
         # Step # | name | target | value
         # 1 | open | / |
@@ -218,13 +220,13 @@ class TestLogin(TestCase):
         self.driver.find_element(By.LINK_TEXT, "Log in").click()
         # 4 | type | id=id_username | EMAIL
         self.driver.find_element(By.ID, "id_username").send_keys(
-            "mrrmoc@gmail.con")
+            "mrrmoc@gmail.com")
         # 5 | type | id=id_password | PASSWORD
         self.driver.find_element(By.ID, "id_password").send_keys(
             "1234")
         # 6 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        time.sleep(20)
+        time.sleep(60)
         # 7 | click | linkText=Ver mais |
         self.driver.find_element(By.LINK_TEXT, "Ver mais").click()
         # 8 | click | css=.card-body |
