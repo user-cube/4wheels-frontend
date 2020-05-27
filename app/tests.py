@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 #from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from dotenv import load_dotenv
+import os
 
 #self.driver = webdriver.Chrome(ChromeDriverManager().install())
 class HomepageLoggedOut(TestCase):
@@ -160,3 +162,54 @@ class TestSearchBarTest(TestCase):
         self.driver.find_element(By.CSS_SELECTOR, ".example > button").click()
         # 18 | click | css=.col-md-3:nth-child(2) .card-body |
         self.driver.find_element(By.CSS_SELECTOR, ".col-md-3:nth-child(2) .card-body").click()
+
+
+class LoginTest(TestCase):
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub',
+                                       desired_capabilities=DesiredCapabilities.CHROME)
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_loginTest(self):
+        load_dotenv()
+        # Test name: LoginTest
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
+        # 2 | setWindowSize | 1552x849 |
+        self.driver.set_window_size(1552, 849)
+        # 3 | click | linkText=Log in |
+        self.driver.find_element(By.LINK_TEXT, "Log in").click()
+        # 4 | type | id=id_username | mrrmoc@gmail.com
+        self.driver.find_element(By.ID, "id_username").send_keys(os.getenv('LOGIN_EMAIL'))
+        # 5 | type | id=id_password | 1234
+        self.driver.find_element(By.ID, "id_password").send_keys(os.getenv('LOGIN_PASSWORD'))
+        # 6 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 7 | click | css=.navbar |
+        self.driver.find_element(By.CSS_SELECTOR, ".navbar").click()
+        # 8 | click | css=.col-md-3:nth-child(1) .card-body |
+        self.driver.find_element(By.CSS_SELECTOR, ".col-md-3:nth-child(1) .card-body").click()
+        # 9 | click | linkText=Ver mais |
+        self.driver.find_element(By.LINK_TEXT, "Ver mais").click()
+        # 10 | mouseDownAt | css=main | 176,591
+        element = self.driver.find_element(By.CSS_SELECTOR, "main")
+        actions = ActionChains(self.driver)
+        actions.move_to_element(element).click_and_hold().perform()
+        # 11 | mouseMoveAt | css=main | 176,591
+        element = self.driver.find_element(By.CSS_SELECTOR, "main")
+        actions = ActionChains(self.driver)
+        actions.move_to_element(element).perform()
+        # 12 | mouseUpAt | css=main | 176,591
+        element = self.driver.find_element(By.CSS_SELECTOR, "main")
+        actions = ActionChains(self.driver)
+        actions.move_to_element(element).release().perform()
+        # 13 | click | css=main |
+        self.driver.find_element(By.CSS_SELECTOR, "main").click()
+        # 14 | click | css=.card-body |
+        self.driver.find_element(By.CSS_SELECTOR, ".card-body").click()
+        # 15 | click | css=.btn-primary:nth-child(3) |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn-primary:nth-child(3)").click()
