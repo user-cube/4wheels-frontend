@@ -224,7 +224,7 @@ class TestLogin(TestCase):
             os.getenv('LOGIN_PASSWORD'))
         # 6 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        time.sleep(60)
+        time.sleep(20)
         # 7 | click | linkText=Ver mais |
         self.driver.find_element(By.LINK_TEXT, "Ver mais").click()
         # 8 | click | css=.card-body |
