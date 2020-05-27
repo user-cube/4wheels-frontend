@@ -209,9 +209,7 @@ class TestLogin(TestCase):
         self.driver.quit()
 
     def test_loginTest(self):
-        
         load_dotenv()
-        
         # Test name: LoginTest
         # Step # | name | target | value
         # 1 | open | / |
