@@ -199,7 +199,7 @@ class TestSearchBarTest(TestCase):
             By.CSS_SELECTOR, ".col-md-3:nth-child(2) .card-body").click()
 
 
-class TestLogin(TestCase):
+class TestLogin():
     def setUp(self) -> None:
         self.driver = webdriver.Remote(
             command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
