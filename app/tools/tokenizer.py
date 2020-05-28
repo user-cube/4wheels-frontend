@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 import jwt
 from dotenv import load_dotenv
 import os
+import requests
 
 load_dotenv()
 
@@ -33,3 +34,18 @@ class Tokenizer:
         }
         token = jwt.encode(message, self.key, algorithm='HS512')
         return token.decode("utf-8")
+
+    def checkUserType(self, request):
+        if 'user_type' not in request.session.keys():
+            return False;
+        else:
+            return True;
+
+    def getType(self, request):
+        r = requests.get("https://tqsapitests.herokuapp.com/profile/",
+                         headers={'Authorization': 'Bearer ' + self.genToken(request.user.email)})
+        if r.status_code != 200:
+            return False
+        json = r.json()
+        request.session.__setitem__('user_type', json['type'])
+        return True

@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import render, redirect
 
 # Create your views here.
@@ -27,7 +27,7 @@ def home(request):
     """
     r = requests.get("https://tqsapitests.herokuapp.com/car/")
     if r.status_code != 200:
-        return FileNotFoundError()
+        return HttpResponseNotFound()
 
     json = r.json()
 
@@ -36,6 +36,13 @@ def home(request):
         'year': datetime.now().year,
         'database': json
     }
+    if request.user.is_authenticated:
+        isTyped = tokenizer.checkUserType(request)
+        if not isTyped:
+            isOk = tokenizer.getType(request)
+            if not isOk:
+                return HttpResponseNotFound()
+
     return render(request, 'index.html', tparams)
 
 
