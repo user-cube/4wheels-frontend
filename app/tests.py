@@ -685,3 +685,43 @@ class TestSellerPanel():
             By.ID, "id_username").send_keys(EMAIL)
         # 18 | click | id=id_password |
         self.driver.find_element(By.ID, "id_password").click()
+
+class TestDeleteCar():
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(
+            command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_deleteCar(self):
+        # Test name: DeleteCar
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
+        # 2 | setWindowSize | 1051x815 |
+        self.driver.set_window_size(1051, 815)
+        # 3 | click | linkText=Log in |
+        self.driver.find_element(By.LINK_TEXT, "Log in").click()
+        # 4 | type | id=id_username |
+        self.driver.find_element(By.ID, "id_username").send_keys(EMAIL)
+        # 5 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 6 | type | id=id_password |
+        self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
+        # 7 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 8 | click | linkText=Seller Panel |
+        self.driver.find_element(By.LINK_TEXT, "Seller Panel").click()
+        # 10 | click | css=tr:nth-child(3) .btn-danger |
+        self.driver.find_element(
+            By.CSS_SELECTOR, "tr:nth-child(3) .btn-danger").click()
+        # 11 | assertConfirmation | Are you sure? |
+        assert self.driver.switch_to.alert.text == "Are you sure?"
+        # 12 | webdriverChooseOkOnVisibleConfirmation |  |
+        self.driver.switch_to.alert.accept()
+        # 13 | click | id=navbarDropdown |
+        self.driver.find_element(By.ID, "navbarDropdown").click()
+        # 14 | click | linkText=Logout |
+        self.driver.find_element(By.LINK_TEXT, "Logout").click()
