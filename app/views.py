@@ -375,6 +375,7 @@ def deleteCarFromSale(request, carID):
     else:
         return redirect('login')
 
+
 def editCar(request, carID):
     if request.user.is_authenticated:
         r = requests.get("https://tqsapitests.herokuapp.com/car/" + str(carID))
@@ -382,9 +383,10 @@ def editCar(request, carID):
             messages.error(request, "Erro ao editar item.")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
-        return render(request, 'editCar.html', {'row' : r.json(), 'year': datetime.now().year})
+        return render(request, 'editCar.html', {'row': r.json(), 'year': datetime.now().year})
     else:
         return redirect('login')
+
 
 def saveEdit(request):
     if request.user.is_authenticated and request.method == "POST":
@@ -400,17 +402,17 @@ def saveEdit(request):
         print(request.POST)
 
         content = {
-            'brand' : request.POST['brand'],
-            'model' : request.POST['model'],
-            'month' : request.POST['month'],
-            'year' : request.POST['year'],
-            'description' : request.POST['description'],
-            'typeOfFuel' : request.POST['typeOfFuel'],
-            'kilometers' : request.POST['kilometers'],
-            'price' : request.POST['price'],
-            'id' : request.POST['carID'],
-            'ownerMail' : request.user.email,
-            'photo' : image
+            'brand': request.POST['brand'],
+            'model': request.POST['model'],
+            'month': request.POST['month'],
+            'year': request.POST['year'],
+            'description': request.POST['description'],
+            'typeOfFuel': request.POST['typeOfFuel'],
+            'kilometers': request.POST['kilometers'],
+            'price': request.POST['price'],
+            'id': request.POST['carID'],
+            'ownerMail': request.user.email,
+            'photo': image
         }
 
         r = requests.put("https://tqsapitests.herokuapp.com/car/" + str(request.POST['carID']), json=content,
@@ -425,4 +427,4 @@ def saveEdit(request):
         return redirect('sellerpanel')
 
     else:
-        return render('login')
+        return redirect('login')
