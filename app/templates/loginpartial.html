@@ -3,16 +3,12 @@
         {% csrf_token %}
         <ul class="navbar-nav mr-auto">
             {% if request.session.user_type == 0 %}
-                <li><a class="nav-link" href="{% url 'favourite' %}">{{ request.session.user_type }}</a></li>
-
                 <li {% if request.resolver_match.url_name == 'boughtlist' %}class="nav-item active"{% endif %}
                     {% if request.resolver_match.url_name == 'boughtSearch' %}class="nav-item active"
                     {% else %}class="nav-item"{% endif %}>
                     <a class="nav-link" href="{% url 'favourite' %}">Favourites</a>
                 </li>
             {% else %}
-                <li><a class="nav-link" href="{% url 'favourite' %}">{{ request.session.user_type }}</a></li>
-
                 <li {% if request.resolver_match.url_name == 'sellerpanel' %}class="nav-item active"{% endif %}
                     {% if request.resolver_match.url_name == 'boughtSearch' %}class="nav-item active"
                     {% else %}class="nav-item"{% endif %}>
