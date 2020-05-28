@@ -1,0 +1,104 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags %}
+                <script>alert("{{ message }}")</script> {% endif %}
+
+        {% endfor %}
+    {% endif %}
+    <div class="row">
+        <div class="col-lg-2">
+            <img src="data:image/jpeg;base64,{{ row.photo }}" class="img-responsive img-thumbnail ">
+            <br>
+            <br>
+        </div>
+        <div class="col-lg-10 ">
+            <form class="form-horizontal" method="post" action="{% url 'updateProfile' %}"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Nome</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="name" name="name" type="text"
+                                   placeholder="Nome" class="form-control input-lg" value="{{ row.name }}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Morada</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="morada" name="morada" type="text"
+                                   placeholder="Morada" class="form-control input-lg" value="{{ row.address }}" required
+                            >
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Código Postal</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="zipcode" name="zipcode" type="text"
+                                   placeholder="zipcode" class="form-control input-lg" value="{{ row.zipCode }}" required
+                            >
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Cidade</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="city" name="city" type="text"
+                                   placeholder="País" class="form-control input-lg" value="{{ row.city }}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">NIF</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="nif" name="nif" type="text"
+                                   placeholder="País" class="form-control input-lg" value="{{ row.nif }}" readonly required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Email</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="email" name="email" type="text"
+                                   placeholder="Email" class="form-control input-lg" value="{{ request.user.email }}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <!-- File Button -->
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Upload photo">Upload photo</label>
+                    <div class="col-md-4">
+                        <input id="picture" name="picture" class="input-file" type="file">
+                    </div>
+                </div>
+
+                <div class="form-group" hidden>
+                    <label class="col-lg-4" for="photo">Image</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="photo" name="photo" type="text"
+                                   placeholder="País" class="form-control input-lg" value="{{ row.photo }}" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label"></label>
+                    <div class="col-md-4">
+                        <input type="submit" value="Alterar dados" class="btn btn-success"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

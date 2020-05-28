@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+{% block headers %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="jumbotron"
+                     style="background-image: url('data:image/jpeg;base64,{{ row.photo }}');
+                             background-size: cover;
+                             background-repeat: no-repeat;
+                             background-position: center;
+                             height: 450px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row" style="text-align: center">
+            <div class="col-lg-12">
+                <h1>{{ row.brand }} {{ row.model }}</h1>
+            </div>
+            {% if request.user.is_authenticated and not isFav and request.session.user_type == 0%}
+                <div class="col-lg-12" style="text-align: left">
+                    <form action="/favourites/add/{{ row.id }}" method='post'>
+                        {% csrf_token %}
+                        <input name='id' value="{{ row.id }}" hidden>
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="fa fa-heart"> <strong>Add to favorites</strong></i></button>
+                    </form>
+                </div>
+            {% endif %}
+            {% if request.user.is_authenticated and isFav and request.session.user_type == 0%}
+                <div class="col-lg-12" style="text-align: left">
+                    <form action="/delete/favourite/{{ row.id }}" method='post'>
+                        {% csrf_token %}
+                        <input name='id' value="{{ row.id }}" hidden>
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="fa fa-heart"> <strong>Remove from favorites</strong></i></button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+        <br>
+        <div class="col-lg-12">
+            <div class="row">
+                <div class="col-lg-9" style="text-align: left">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <p>{{ row.description }}</p>
+                        </div>
+                        <div class="col-lg-12">
+                            <table class="table table-responsive-lg table-hover"
+                                   style="text-align: center; table-layout: fixed">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th>Preço</th>
+                                    <th>Tipo</th>
+                                    <th>Combustível</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>{{ row.price }}€</td>
+                                    <td>{% if row.kilometers > 0 %}Usado{% else %}Novo{% endif %}</td>
+                                    <td>{{ row.typeOfFuel }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-lg-12">
+                            <table class="table table-responsive-lg table-hover"
+                                   style="text-align: center; table-layout: fixed">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>Ano</th>
+                                    <th>Mês</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>{{ row.brand }}</td>
+                                    <td>{{ row.model }}</td>
+                                    <td>{{ row.year }}</td>
+                                    <td>{{ row.month }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top"
+                             src="data:image/jpeg;base64,{{ seller.photo }}"
+                             alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title">Vendedor - {{ seller.name }}</h5>
+                            {% if request.user.is_authenticated %}
+                                <p class="card-text">Pode contactar o vendedor através:</p>
+                                <a href="mailto:{{ seller.mail }}" class="btn btn-primary"><i
+                                        class="fa fa-envelope"></i></a>
+                                <a href="#" class="btn btn-primary"><i class="fa fa-phone"> {{ seller.contact }}</i></a>
+                            {% else %}
+                                <p>Tem de efetuar login para ver as informações do vendedor.</p>
+                                <a href="{% url 'login' %}" class="btn btn-primary"><i class="fa fa-sign-in-alt">
+                                    Login</i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

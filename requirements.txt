@@ -1,0 +1,8 @@
+Pillow
+gunicorn
+django-heroku
+python-dotenv
+requests
+pyjwt
+selenium
+webdriver-manager

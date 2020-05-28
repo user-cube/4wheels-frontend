@@ -1,0 +1,82 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags %}
+                <script>alert("{{ message }}")</script> {% endif %}
+
+        {% endfor %}
+    {% endif %}
+    <div class="row">
+        <div class="col-lg-2">
+            {% load static %}
+            <img src="data:image/jpeg;base64,{{ row.photo }}" class="img-responsive img-thumbnail ">
+            <br>
+            <br>
+            <a href="/profile/edit/" class="btn btn-success"><span
+                    class="glyphicon glyphicon-thumbs-up"></span>
+                Editar perfil</a>
+        </div>
+        <div class="col-lg-10 ">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Nome</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="nome" name="nome" type="text"
+                                   placeholder="Nome" class="form-control input-lg" value="{{ row.name }}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Morada</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="morada" name="morada" type="text"
+                                   placeholder="Morada" class="form-control input-lg" value="{{ row.address }}"
+                                   readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Código Postal</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="zipcode" name="zipcode" type="text"
+                                   placeholder="zipcode" class="form-control input-lg" value="{{ row.zipCode }}"
+                                   readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Cidade</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="pais" name="pais" type="text"
+                                   placeholder="País" class="form-control input-lg" value="{{ row.city }}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">NIF</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="pais" name="pais" type="text"
+                                   placeholder="País" class="form-control input-lg" value="{{ row.nif }}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Email</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="email" name="email" type="text"
+                                   placeholder="Email" class="form-control input-lg" value="{{ request.user.email }}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
