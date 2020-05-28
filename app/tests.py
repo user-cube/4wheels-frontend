@@ -478,11 +478,14 @@ class TestEditProfile():
         actions = ActionChains(self.driver)
         actions.double_click(element).perform()
         # 27 | click | css=.form-group:nth-child(5) #pais |
-        self.driver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(5) #pais").click()
+        self.driver.find_element(
+            By.CSS_SELECTOR, ".form-group:nth-child(5) #pais").click()
         # 28 | click | css=.form-group:nth-child(5) #pais |
-        self.driver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(5) #pais").click()
+        self.driver.find_element(
+            By.CSS_SELECTOR, ".form-group:nth-child(5) #pais").click()
         # 29 | doubleClick | css=.form-group:nth-child(5) #pais |
-        element = self.driver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(5) #pais")
+        element = self.driver.find_element(
+            By.CSS_SELECTOR, ".form-group:nth-child(5) #pais")
         actions = ActionChains(self.driver)
         actions.double_click(element).perform()
         # 30 | click | id=email |
@@ -500,7 +503,8 @@ class TestEditProfile():
         # 35 | type | id=name | Rui Coelho
         self.driver.find_element(By.ID, "name").send_keys("Rui Coelho")
         # 36 | click | css=.form-group:nth-child(4) |
-        self.driver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(4)").click()
+        self.driver.find_element(
+            By.CSS_SELECTOR, ".form-group:nth-child(4)").click()
         # 37 | click | id=morada |
         self.driver.find_element(By.ID, "morada").click()
         # 38 | click | css=.row |
@@ -510,7 +514,8 @@ class TestEditProfile():
         # 40 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         # 41 | click | css=.form-group:nth-child(1) > .col-lg-6 |
-        self.driver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(1) > .col-lg-6").click()
+        self.driver.find_element(
+            By.CSS_SELECTOR, ".form-group:nth-child(1) > .col-lg-6").click()
         # 42 | click | css=.col-lg-10 |
         self.driver.find_element(By.CSS_SELECTOR, ".col-lg-10").click()
         # 43 | click | id=morada |
@@ -526,4 +531,53 @@ class TestEditProfile():
         # 47 | click | id=navbarDropdown |
         self.driver.find_element(By.ID, "navbarDropdown").click()
         # 48 | click | linkText=Logout |
+        self.driver.find_element(By.LINK_TEXT, "Logout").click()
+
+
+class TestAddFavourites():
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(
+            command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_addFavourites(self):
+        # Test name: AddFavourites
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
+        # 2 | setWindowSize | 1052x821 |
+        self.driver.set_window_size(1052, 821)
+        # 3 | click | linkText=Log in |
+        self.driver.find_element(By.LINK_TEXT, "Log in").click()
+        # 4 | type | id=id_username | ruicoelho@av.it.pt
+        self.driver.find_element(
+            By.ID, "id_username").send_keys(EMAIL)
+        # 5 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 6 | type | id=id_password | Abcd1234!
+        self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
+        # 7 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 8 | click | linkText=Favourites |
+        self.driver.find_element(By.LINK_TEXT, "Favourites").click()
+        # 9 | click | css=p:nth-child(1) |
+        self.driver.find_element(By.CSS_SELECTOR, "p:nth-child(1)").click()
+        # 10 | click | linkText=Home |
+        self.driver.find_element(By.LINK_TEXT, "Home").click()
+        # 11 | click | linkText=Ver mais |
+        self.driver.find_element(By.LINK_TEXT, "Ver mais").click()
+        # 12 | click | css=strong |
+        self.driver.find_element(By.CSS_SELECTOR, "strong").click()
+        # 13 | click | linkText=Favourites |
+        self.driver.find_element(By.LINK_TEXT, "Favourites").click()
+        # 14 | click | css=.thead-dark > tr |
+        self.driver.find_element(By.CSS_SELECTOR, ".thead-dark > tr").click()
+        # 15 | click | css=.btn-primary |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn-primary").click()
+        # 16 | click | id=navbarDropdown |
+        self.driver.find_element(By.ID, "navbarDropdown").click()
+        # 17 | click | linkText=Logout |
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
