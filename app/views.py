@@ -374,3 +374,55 @@ def deleteCarFromSale(request, carID):
 
     else:
         return redirect('login')
+
+def editCar(request, carID):
+    if request.user.is_authenticated:
+        r = requests.get("https://tqsapitests.herokuapp.com/car/" + str(carID))
+        if r.status_code != 200:
+            messages.error(request, "Erro ao editar item.")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+        return render(request, 'editCar.html', {'row' : r.json(), 'year': datetime.now().year})
+    else:
+        return redirect('login')
+
+def saveEdit(request):
+    if request.user.is_authenticated and request.method == "POST":
+        try:
+            image = request.FILES['picture'].file.read()
+            b64pic = b64encode(image)
+            image = b64pic.decode("utf-8")
+
+        except Exception as e:
+            image = request.POST['photo']
+            print(e)
+
+        print(request.POST)
+
+        content = {
+            'brand' : request.POST['brand'],
+            'model' : request.POST['model'],
+            'month' : request.POST['month'],
+            'year' : request.POST['year'],
+            'description' : request.POST['description'],
+            'typeOfFuel' : request.POST['typeOfFuel'],
+            'kilometers' : request.POST['kilometers'],
+            'price' : request.POST['price'],
+            'id' : request.POST['carID'],
+            'ownerMail' : request.user.email,
+            'photo' : image
+        }
+
+        r = requests.put("https://tqsapitests.herokuapp.com/car/" + str(request.POST['carID']), json=content,
+                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+        if r.status_code != 200:
+            messages.error(
+                request, "Não foi possível atualizar as informações do carro")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+        messages.info(request, "Informações atualizadas com sucesso")
+        return redirect('sellerpanel')
+
+    else:
+        return render('login')

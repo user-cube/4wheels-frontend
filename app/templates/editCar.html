@@ -1,0 +1,153 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags %}
+                <script>alert("{{ message }}")</script> {% endif %}
+
+        {% endfor %}
+    {% endif %}
+    <div class="row">
+        <div class="col-lg-2">
+            <img src="data:image/jpeg;base64,{{ row.photo }}" class="img-responsive img-thumbnail ">
+            <br>
+            <br>
+        </div>
+        <div class="col-lg-10 ">
+            <form class="form-horizontal" method="post" action="/seller/edit/save"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Marca</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="brand" name="brand" type="text"
+                                   placeholder="Marca do carro" class="form-control input-lg" value="{{ row.brand }}"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Modelo</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="model" name="model" type="text"
+                                   placeholder="Modelo do carro" class="form-control input-lg" value="{{ row.model }}"
+                                   required
+                            >
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Mês de matrícula</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="month" name="month" type="number"
+                                   placeholder="Mês do carro (0 se novo)" class="form-control input-lg"
+                                   value="{{ row.month }}" required
+                            >
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Ano de matrícula</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="year" name="year" type="number"
+                                   placeholder="Ano do carro (0 se novo)" class="form-control input-lg"
+                                   value="{{ row.year }}" required
+                            >
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Descrição</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="description" name="description" type="text"
+                                   placeholder="Descrição" class="form-control input-lg" value="{{ row.description }}"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Combustível</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <select id="typeOfFuel" name="typeOfFuel" class="form-control" required>
+                                <option value="Eletrico"
+                                        {% if row.typeOfFuel == "Elétrico" %}selected{% endif %}>Elétrico
+                                </option>
+                                <option value="Híbrido" {% if row.typeOfFuel == "Híbrido" %}selected{% endif %}>
+                                    Híbrido
+                                </option>
+                                <option value="Gasolina" {% if row.typeOfFuel == "Gasolina" %}selected{% endif %}>
+                                    Gasolina
+                                </option>
+                                <option value="Gasóleo" {% if row.typeOfFuel == "Gasóleo" %}selected{% endif %}>
+                                    Gasóleo
+                                </option>
+                                <option value="GPL" {% if row.typeOfFuel == "GPL" %}selected{% endif %}>GPL</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Quilometragem</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="kilometers" name="kilometers" type="number"
+                                   placeholder="Quilómetros do carro (0 se novo)" class="form-control input-lg" value="{{ row.kilometers }}"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-4" for="Nome">Preço</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="price" name="price" type="number"
+                                   placeholder="Preço do carro" class="form-control input-lg" value="{{ row.price }}"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+                <!-- File Button -->
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Upload photo">Upload photo</label>
+                    <div class="col-md-4">
+                        <input id="picture" name="picture" class="input-file" type="file">
+                    </div>
+                </div>
+
+                <div class="form-group" hidden>
+                    <label class="col-lg-4" for="photo">Image</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="photo" name="photo" type="text"
+                                   placeholder="País" class="form-control input-lg" value="{{ row.photo }}" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" hidden>
+                    <label class="col-lg-4" for="photo">ID</label>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="carID" name="carID" type="number"
+                                   placeholder="País" class="form-control input-lg" value="{{ row.id }}" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label"></label>
+                    <div class="col-md-4">
+                        <input type="submit" value="Alterar dados" class="btn btn-success"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
