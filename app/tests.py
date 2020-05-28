@@ -6,23 +6,13 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium import webdriver
-<< << << < HEAD
-#from django.test import TestCase
-== == == =
-# from django.test import TestCase
->>>>>> > 0c3128723e30b0a5911fed27dedf2c66647d2d94
+
 # from webdriver_manager.chrome import ChromeDriverManager
 EMAIL = os.getenv('LOGIN_EMAIL')
 PASSWORD = os.getenv('LOGIN_PASSWORD')
 EMAIL2 = os.getenv('LOGIN_EMAIL2')
 PASSWORD2 = os.getenv('LOGIN_PASSWORD2')
 # self.driver = webdriver.Chrome(ChromeDriverManager().install())
-
-
-<< << << < HEAD
-
-== == == =
->>>>>> > 0c3128723e30b0a5911fed27dedf2c66647d2d94
 
 
 class HomepageLoggedOut():
@@ -783,6 +773,7 @@ class TestEditCar():
         # 15 | click | linkText=Logout |
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
 
+
 class TestAddCar():
     def setUp(self) -> None:
         self.driver = webdriver.Remote(
@@ -791,14 +782,16 @@ class TestAddCar():
 
     def tearDown(self) -> None:
         self.driver.quit()
-  
+
     def test_addCar(self):
         self.driver.get("https://tqsfrontendtest.herokuapp.com/")
         self.driver.set_window_size(1053, 819)
         self.driver.find_element(By.LINK_TEXT, "Log in").click()
         self.driver.find_element(By.ID, "id_username").click()
-        self.driver.find_element(By.ID, "id_username").send_keys("ruicoelho@ua.pt")
-        self.driver.find_element(By.CSS_SELECTOR, ".form-group:nth-child(5) > .col-lg-12").click()
+        self.driver.find_element(
+            By.ID, "id_username").send_keys("ruicoelho@ua.pt")
+        self.driver.find_element(
+            By.CSS_SELECTOR, ".form-group:nth-child(5) > .col-lg-12").click()
         self.driver.find_element(By.ID, "id_password").click()
         self.driver.find_element(By.ID, "id_password").send_keys("Abcd1234!")
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
@@ -822,9 +815,11 @@ class TestAddCar():
         self.driver.find_element(By.ID, "price").click()
         self.driver.find_element(By.ID, "price").send_keys("11600")
         self.driver.find_element(By.ID, "picture").click()
-        self.driver.find_element(By.ID, "picture").send_keys("C:\\fakepath\\teslaModelX.jpg")
+        self.driver.find_element(By.ID, "picture").send_keys(
+            "C:\\fakepath\\teslaModelX.jpg")
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(4)").click()
-        self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(4) > td:nth-child(2)").click()
+        self.driver.find_element(
+            By.CSS_SELECTOR, "tr:nth-child(4) > td:nth-child(2)").click()
         self.driver.find_element(By.ID, "navbarDropdown").click()
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
