@@ -427,7 +427,7 @@ def saveEdit(request):
         return redirect('sellerpanel')
 
     else:
-        return render('login')
+        return redirect('login')
 
 
 def addCar(request):
@@ -476,4 +476,4 @@ def saveCar(request):
         return redirect('sellerpanel')
 
     else:
-        return render('login')
+        return redirect('login')
