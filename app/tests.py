@@ -15,10 +15,6 @@ PASSWORD2 = os.getenv('LOGIN_PASSWORD2')
 # self.driver = webdriver.Chrome(ChromeDriverManager().install())
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 3d58071da1297f9f8a6ec8b910e7a1dd92503830
 class HomepageLoggedOut():
     def setUp(self) -> None:
         self.driver = webdriver.Remote(
@@ -506,7 +502,7 @@ class TestEditProfile():
         # 34 | click | css=.row |
         self.driver.find_element(By.CSS_SELECTOR, ".row").click()
         # 35 | type | id=name | Rui Coelho
-        self.driver.find_element(By.ID, "name").send_keys(EMAIL)
+        self.driver.find_element(By.ID, "name").send_keys("Rui Coelho")
         # 36 | click | css=.form-group:nth-child(4) |
         self.driver.find_element(
             By.CSS_SELECTOR, ".form-group:nth-child(4)").click()
@@ -537,7 +533,6 @@ class TestEditProfile():
         self.driver.find_element(By.ID, "navbarDropdown").click()
         # 48 | click | linkText=Logout |
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
-<<<<<<< HEAD
 
 
 class TestProfileType():
@@ -558,9 +553,9 @@ class TestProfileType():
         self.driver.set_window_size(1052, 821)
         # 3 | click | linkText=Log in |
         self.driver.find_element(By.LINK_TEXT, "Log in").click()
-        # 4 | type | id=id_username | ruicoelho@av.it.pt
+        # 4 | type | id=id_username |
         self.driver.find_element(By.ID, "id_username").send_keys(EMAIL)
-        # 5 | type | id=id_password | Abcd1234!
+        # 5 | type | id=id_password |
         self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
         # 6 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
@@ -574,9 +569,9 @@ class TestProfileType():
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
         # 11 | click | linkText=Log in |
         self.driver.find_element(By.LINK_TEXT, "Log in").click()
-        # 12 | type | id=id_username | ruicoelho@ua.pt
+        # 12 | type | id=id_username |
         self.driver.find_element(By.ID, "id_username").send_keys(EMAIL2)
-        # 13 | type | id=id_password | Abcd1234!
+        # 13 | type | id=id_password |
         self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD2)
         # 14 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
@@ -691,5 +686,3 @@ class TestSellerPanel():
             By.ID, "id_username").send_keys(EMAIL)
         # 18 | click | id=id_password |
         self.driver.find_element(By.ID, "id_password").click()
-=======
->>>>>>> 3d58071da1297f9f8a6ec8b910e7a1dd92503830
