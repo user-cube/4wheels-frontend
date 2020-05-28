@@ -5,7 +5,6 @@ from django.shortcuts import render, redirect
 
 # Create your views here.
 from app.forms import SignUpForm
-from app.models import Profile
 import requests
 from datetime import datetime
 from base64 import b64encode
@@ -74,7 +73,8 @@ def signup(request):
             'username': request.POST['email'],
             'password': request.POST['password1']
         }
-        r = requests.post("https://tqsapitests.herokuapp.com/register", json=msg)
+        r = requests.post(
+            "https://tqsapitests.herokuapp.com/register", json=msg)
         if r.status_code != 200:
             print(r.status_code)
             messages.error(request, "Impossível criar conta.")
