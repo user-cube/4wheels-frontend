@@ -15,6 +15,10 @@ PASSWORD2 = os.getenv('LOGIN_PASSWORD2')
 # self.driver = webdriver.Chrome(ChromeDriverManager().install())
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3d58071da1297f9f8a6ec8b910e7a1dd92503830
 class HomepageLoggedOut():
     def setUp(self) -> None:
         self.driver = webdriver.Remote(
@@ -533,6 +537,7 @@ class TestEditProfile():
         self.driver.find_element(By.ID, "navbarDropdown").click()
         # 48 | click | linkText=Logout |
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
+<<<<<<< HEAD
 
 
 class TestProfileType():
@@ -686,3 +691,5 @@ class TestSellerPanel():
             By.ID, "id_username").send_keys(EMAIL)
         # 18 | click | id=id_password |
         self.driver.find_element(By.ID, "id_password").click()
+=======
+>>>>>>> 3d58071da1297f9f8a6ec8b910e7a1dd92503830
