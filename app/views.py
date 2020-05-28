@@ -60,19 +60,66 @@ def login(request):
 
 def signup(request):
     if request.method == 'POST':
+        print(request.FILES)
+        print(request.POST)
+        try:
+            image = request.FILES['picture'].file.read()
+            b64pic = b64encode(image)
+            image = b64pic.decode("utf-8")
+        except Exception as e:
+            image = None
+            print(e)
+
+        msg = {
+            'username': request.POST['email'],
+            'password': request.POST['password1']
+        }
+        r = requests.post("https://tqsapitests.herokuapp.com/register", json=msg)
+        if r.status_code != 200:
+            print(r.status_code)
+            messages.error(request, "Impossível criar conta.")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        """
+        {
+  "address": "Rua dos Amoras",
+  "city": "Aveiro",
+  "contact": 999999999,
+  "id": 0,
+  "mail": "teste@ua.pt",
+  "name": "Rui Coelho",
+  "nif": 999999999,
+  "photo": "string",
+  "type": 1,
+  "zipCode": "string"
+}
+        """
+        msg = {
+            'name': request.POST['first_name'] + " " + request.POST['last_name'],
+            'address': request.POST['morada'],
+            'zipCode': request.POST['zipcode'],
+            'city': request.POST['city'],
+            'nif': int(request.POST['nif']),
+            'type': int(request.POST['typeOfUser']),
+            'photo': image,
+            'mail': request.POST['email'],
+            'contact': int(request.POST['contact']),
+            'id': 0
+        }
+
+        print(msg)
+        r = requests.post("https://tqsapitests.herokuapp.com/profile/", json=msg,
+                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.POST['email'])})
+        if r.status_code != 200:
+            print(r.status_code)
+            messages.error(request, "Impossível criar conta.")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             authenticate(username=username, password=raw_password)
-            profiler = Profile(nome=request.POST['first_name'],
-                               user=request.POST['username'],
-                               picture='app/static/img/default.jpg',
-                               morada=request.POST['morada'],
-                               zipcode=request.POST['zipcode'],
-                               pais=request.POST['pais'])
-            profiler.save()
             return redirect('login')
     else:
         form = SignUpForm()
