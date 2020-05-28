@@ -552,12 +552,12 @@ class TestAddFavourites():
         self.driver.set_window_size(1052, 821)
         # 3 | click | linkText=Log in |
         self.driver.find_element(By.LINK_TEXT, "Log in").click()
-        # 4 | type | id=id_username | ruicoelho@av.it.pt
+        # 4 | type | id=id_username
         self.driver.find_element(
             By.ID, "id_username").send_keys(EMAIL)
         # 5 | click | id=id_password |
         self.driver.find_element(By.ID, "id_password").click()
-        # 6 | type | id=id_password | Abcd1234!
+        # 6 | type | id=id_password
         self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
         # 7 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
