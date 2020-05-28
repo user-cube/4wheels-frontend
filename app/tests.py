@@ -634,7 +634,8 @@ class TestAddFavourites():
         self.driver.find_element(By.ID, "navbarDropdown").click()
         # 17 | click | linkText=Logout |
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
-        
+
+
 class TestSellerPanel():
     def setUp(self) -> None:
         self.driver = webdriver.Remote(
@@ -686,6 +687,7 @@ class TestSellerPanel():
         # 18 | click | id=id_password |
         self.driver.find_element(By.ID, "id_password").click()
 
+
 class TestDeleteCar():
     def setUp(self) -> None:
         self.driver = webdriver.Remote(
@@ -724,4 +726,49 @@ class TestDeleteCar():
         # 13 | click | id=navbarDropdown |
         self.driver.find_element(By.ID, "navbarDropdown").click()
         # 14 | click | linkText=Logout |
+        self.driver.find_element(By.LINK_TEXT, "Logout").click()
+
+
+class TestEditCar():
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(
+            command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_editCar(self):
+        # Test name: EditCar
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
+        # 2 | setWindowSize | 1052x817 |
+        self.driver.set_window_size(1052, 817)
+        # 3 | click | linkText=Log in |
+        self.driver.find_element(By.LINK_TEXT, "Log in").click()
+        # 4 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 5 | type | id=id_username |
+        self.driver.find_element(By.ID, "id_username").send_keys(EMAIL)
+        # 6 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 7 | type | id=id_password |
+        self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
+        # 8 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 9 | click | linkText=Seller Panel |
+        self.driver.find_element(By.LINK_TEXT, "Seller Panel").click()
+        # 10 | click | css=tr:nth-child(1) .btn-primary > .fa |
+        self.driver.find_element(
+            By.CSS_SELECTOR, "tr:nth-child(1) .btn-primary > .fa").click()
+        # 11 | click | id=model |
+        self.driver.find_element(By.ID, "model").click()
+        # 12 | type | id=model | Model SS
+        self.driver.find_element(By.ID, "model").send_keys("Model SS")
+        # 13 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 14 | click | id=navbarDropdown |
+        self.driver.find_element(By.ID, "navbarDropdown").click()
+        # 15 | click | linkText=Logout |
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
