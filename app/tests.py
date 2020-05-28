@@ -7,7 +7,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium import webdriver
 
-# from webdriver_manager.chrome import ChromeDriverManager
+#from django.test import TestCase
+#from webdriver_manager.chrome import ChromeDriverManager
 EMAIL = os.getenv('LOGIN_EMAIL')
 PASSWORD = os.getenv('LOGIN_PASSWORD')
 EMAIL2 = os.getenv('LOGIN_EMAIL2')
