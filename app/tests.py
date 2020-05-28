@@ -634,8 +634,7 @@ class TestAddFavourites():
         self.driver.find_element(By.ID, "navbarDropdown").click()
         # 17 | click | linkText=Logout |
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
-
-
+        
 class TestSellerPanel():
     def setUp(self) -> None:
         self.driver = webdriver.Remote(
@@ -686,7 +685,6 @@ class TestSellerPanel():
             By.ID, "id_username").send_keys(EMAIL)
         # 18 | click | id=id_password |
         self.driver.find_element(By.ID, "id_password").click()
-
 
 class TestDeleteCar():
     def setUp(self) -> None:
