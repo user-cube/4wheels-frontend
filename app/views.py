@@ -428,3 +428,52 @@ def saveEdit(request):
 
     else:
         return redirect('login')
+
+
+def addCar(request):
+    if request.user.is_authenticated:
+        return render(request, 'addCar.html')
+    else:
+        return redirect('login')
+
+
+def saveCar(request):
+    if request.user.is_authenticated and request.method == "POST":
+        try:
+            image = request.FILES['picture'].file.read()
+            b64pic = b64encode(image)
+            image = b64pic.decode("utf-8")
+        except Exception as e:
+            print(e)
+            messages.error(
+                request, "Não foi possível criar um carro")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+        content = {"car": {
+            'brand': request.POST['brand'],
+            'model': request.POST['model'],
+            'month': request.POST['month'],
+            'year': request.POST['year'],
+            'description': request.POST['description'],
+            'typeOfFuel': request.POST['typeOfFuel'],
+            'kilometers': request.POST['kilometers'],
+            'price': request.POST['price'],
+            'ownerMail': request.user.email,
+            'photo': image
+        }
+        }
+
+        r = requests.post("https://tqsapitests.herokuapp.com/car/", json=content,
+                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+        if r.status_code != 200:
+            print(r.status_code)
+            messages.error(
+                request, "Não foi possível adicionar o carro")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+        messages.info(request, "Carro adicionado com sucesso")
+        return redirect('sellerpanel')
+
+    else:
+        return redirect('login')

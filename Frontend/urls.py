@@ -35,5 +35,7 @@ urlpatterns = [
     path('seller/', views.sellerPanel, name="sellerpanel"),
     path('seller/delete/<int:carID>', views.deleteCarFromSale, name="sellerdelete"),
     path('seller/edit/<int:carID>', views.editCar, name="selleredit"),
-    path('seller/edit/save', views.saveEdit, name="saveedit")
+    path('seller/edit/save', views.saveEdit, name="saveedit"),
+    path('seller/add/', views.addCar, name="addcar"),
+    path('seller/add/save', views.saveCar, name="addcarsave")
 ]
