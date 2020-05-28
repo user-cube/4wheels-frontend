@@ -553,9 +553,9 @@ class TestProfileType():
         self.driver.set_window_size(1052, 821)
         # 3 | click | linkText=Log in |
         self.driver.find_element(By.LINK_TEXT, "Log in").click()
-        # 4 | type | id=id_username | ruicoelho@av.it.pt
+        # 4 | type | id=id_username |
         self.driver.find_element(By.ID, "id_username").send_keys(EMAIL)
-        # 5 | type | id=id_password | Abcd1234!
+        # 5 | type | id=id_password |
         self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
         # 6 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
@@ -569,9 +569,9 @@ class TestProfileType():
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
         # 11 | click | linkText=Log in |
         self.driver.find_element(By.LINK_TEXT, "Log in").click()
-        # 12 | type | id=id_username | ruicoelho@ua.pt
+        # 12 | type | id=id_username |
         self.driver.find_element(By.ID, "id_username").send_keys(EMAIL2)
-        # 13 | type | id=id_password | Abcd1234!
+        # 13 | type | id=id_password |
         self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD2)
         # 14 | click | css=.btn |
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
@@ -634,3 +634,54 @@ class TestAddFavourites():
         self.driver.find_element(By.ID, "navbarDropdown").click()
         # 17 | click | linkText=Logout |
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
+        
+class TestSellerPanel():
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(
+            command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_sellerPanel(self):
+        # Test name: SellerPanel
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
+        # 2 | setWindowSize | 1052x824 |
+        self.driver.set_window_size(1052, 824)
+        # 3 | click | linkText=Log in |
+        self.driver.find_element(By.LINK_TEXT, "Log in").click()
+        # 4 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 5 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 6 | click | css=.form-group:nth-child(4) > .col-lg-12 |
+        self.driver.find_element(
+            By.CSS_SELECTOR, ".form-group:nth-child(4) > .col-lg-12").click()
+        # 7 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 8 | type | id=id_password
+        self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
+        # 9 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 10 | click | linkText=Seller Panel |
+        self.driver.find_element(By.LINK_TEXT, "Seller Panel").click()
+        # 11 | click | css=.thead-dark > tr |
+        self.driver.find_element(By.CSS_SELECTOR, ".thead-dark > tr").click()
+        # 12 | click | css=.col-lg-12 |
+        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12").click()
+        # 13 | click | css=.fa-plus |
+        self.driver.find_element(By.CSS_SELECTOR, ".fa-plus").click()
+        # 14 | click | linkText=Seller Panel |
+        self.driver.find_element(By.LINK_TEXT, "Seller Panel").click()
+        # 15 | click | id=navbarDropdown |
+        self.driver.find_element(By.ID, "navbarDropdown").click()
+        # 16 | click | linkText=Logout |
+        self.driver.find_element(By.LINK_TEXT, "Logout").click()
+        # 17 | type | id=id_username |
+        self.driver.find_element(
+            By.ID, "id_username").send_keys(EMAIL)
+        # 18 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()

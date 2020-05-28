@@ -335,3 +335,24 @@ def addFavourites(request, favID):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     else:
         return redirect('login')
+
+def sellerPanel(request):
+    if request.user.is_authenticated:
+        r = requests.get("https://tqsapitests.herokuapp.com/car/")
+        if r.status_code != 200:
+            return HttpResponseNotFound()
+
+        json = r.json()
+
+        lista = []
+        for i in json:
+            if i['ownerMail'] == request.user.email:
+                lista.append(i)
+
+        tparams = {
+            'year': datetime.now().year,
+            'database': lista
+        }
+        return render(request, 'sellerPanel.html', tparams)
+    else:
+        return redirect('login')
