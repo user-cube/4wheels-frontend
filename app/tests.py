@@ -5,12 +5,15 @@ from dotenv import load_dotenv
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
 
+# from django.test import TestCase
 # from webdriver_manager.chrome import ChromeDriverManager
 EMAIL = os.getenv('LOGIN_EMAIL')
 PASSWORD = os.getenv('LOGIN_PASSWORD')
 EMAIL2 = os.getenv('LOGIN_EMAIL2')
+EMAIL3 = os.getenv('LOGIN_EMAIL3')
 PASSWORD2 = os.getenv('LOGIN_PASSWORD2')
 # self.driver = webdriver.Chrome(ChromeDriverManager().install())
 
@@ -822,4 +825,101 @@ class TestAddCar():
         self.driver.find_element(
             By.CSS_SELECTOR, "tr:nth-child(4) > td:nth-child(2)").click()
         self.driver.find_element(By.ID, "navbarDropdown").click()
+        self.driver.find_element(By.LINK_TEXT, "Logout").click()
+
+
+class TestRegister():
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(
+            command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_register(self):
+        # Test name: Register
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
+        # 2 | setWindowSize | 1052x817 |
+        self.driver.set_window_size(1052, 817)
+        # 3 | click | linkText=Sign Up |
+        self.driver.find_element(By.LINK_TEXT, "Sign Up").click()
+        # 4 | type | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 7 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 8 | type | id=id_username | mrrmoc@gmail.com
+        self.driver.find_element(By.ID, "id_username").send_keys(EMAIL3)
+        # 9 | click | id=id_first_name |
+        self.driver.find_element(By.ID, "id_first_name").click()
+        # 10 | type | id=id_first_name | Rui
+        self.driver.find_element(By.ID, "id_first_name").send_keys("Rui")
+        # 11 | click | id=id_last_name |
+        self.driver.find_element(By.ID, "id_last_name").click()
+        # 12 | type | id=id_last_name | Coelho
+        self.driver.find_element(By.ID, "id_last_name").send_keys("Coelho")
+        # 13 | click | id=id_email |
+        self.driver.find_element(By.ID, "id_email").click()
+        # 14 | type | id=id_email | mrrmoc@gmail.com
+        self.driver.find_element(By.ID, "id_email").send_keys(EMAIL3)
+        # 15 | click | id=id_password1 |
+        self.driver.find_element(By.ID, "id_password1").click()
+        # 16 | type | id=id_password1 | Abcd1234!
+        self.driver.find_element(By.ID, "id_password1").send_keys(PASSWORD)
+        # 17 | click | css=.form-group:nth-child(14) |
+        self.driver.find_element(
+            By.CSS_SELECTOR, ".form-group:nth-child(14)").click()
+        # 18 | click | id=id_password2 |
+        self.driver.find_element(By.ID, "id_password2").click()
+        # 19 | type | id=id_password2 | Abcd1234!
+        self.driver.find_element(By.ID, "id_password2").send_keys(PASSWORD)
+        # 20 | click | name=morada |
+        self.driver.find_element(By.NAME, "morada").click()
+        # 21 | type | name=morada | Rua dos Testes
+        self.driver.find_element(By.NAME, "morada").send_keys("Rua dos Testes")
+        # 22 | click | name=zipcode |
+        self.driver.find_element(By.NAME, "zipcode").click()
+        # 23 | type | name=zipcode | 3810-193
+        self.driver.find_element(By.NAME, "zipcode").send_keys("3810-193")
+        # 24 | click | name=city |
+        self.driver.find_element(By.NAME, "city").click()
+        # 25 | type | name=city | Aveiro
+        self.driver.find_element(By.NAME, "city").send_keys("Aveiro")
+        # 26 | click | name=nif |
+        self.driver.find_element(By.NAME, "nif").click()
+        # 27 | type | name=nif | 999999999
+        self.driver.find_element(By.NAME, "nif").send_keys("999999999")
+        # 28 | click | name=contact |
+        self.driver.find_element(By.NAME, "contact").click()
+        # 29 | type | name=contact | 999999999
+        self.driver.find_element(By.NAME, "contact").send_keys("999999999")
+        # 30 | click | id=typeOfUser |
+        self.driver.find_element(By.ID, "typeOfUser").click()
+        # 31 | select | id=typeOfUser | label=Vendedor
+        dropdown = self.driver.find_element(By.ID, "typeOfUser")
+        dropdown.find_element(By.XPATH, "//option[. = 'Vendedor']").click()
+        # 32 | click | id=typeOfUser |
+        self.driver.find_element(By.ID, "typeOfUser").click()
+        # 33 | click | id=picture |
+        self.driver.find_element(By.ID, "picture").click()
+        # 34 | type | id=picture | C:\fakepath\teslaModel3.jpg
+        self.driver.find_element(By.ID, "picture").send_keys(
+            "C:\\fakepath\\teslaModel3.jpg")
+        # 35 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 36 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 37 | type | id=id_username | mrrmoc@gmail.com
+        self.driver.find_element(By.ID, "id_username").send_keys(EMAIL3)
+        # 38 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 39 | type | id=id_password | Abcd1234!
+        self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
+        # 40 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 41 | click | id=navbarDropdown |
+        self.driver.find_element(By.ID, "navbarDropdown").click()
+        # 42 | click | linkText=Logout |
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
