@@ -483,7 +483,7 @@ def saveEdit(request):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
         messages.info(request, "Informações atualizadas com sucesso")
-        return redirect('sellerpanel')
+        return redirect('sellerpanel', typeOfPanel="selling")
 
     else:
         return redirect('login')
@@ -534,7 +534,7 @@ def saveCar(request):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
         messages.info(request, "Carro adicionado com sucesso")
-        return redirect('sellerpanel')
+        return redirect('sellerpanel', typeOfPanel="selling")
 
     else:
         return redirect('login')
