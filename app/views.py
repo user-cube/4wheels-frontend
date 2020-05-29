@@ -24,8 +24,9 @@ def home(request):
         Spring API.
 
     """
-    r = requests.get("https://tqsapitests.herokuapp.com/car/")
+    r = requests.get("https://tqscarapi.herokuapp.com/car/")
     if r.status_code != 200:
+        print(r.status_code)
         return HttpResponseNotFound()
 
     json = r.json()
@@ -154,21 +155,22 @@ def getItem(request, carId):
             print("Profile " + str(r.status_code))
             return HttpResponseNotFound()
         seller = r.json()
-        r = requests.get("https://tqsapitests.herokuapp.com/favourite/",
-                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
-        if r.status_code != 200:
-            print("Favourite " + str(r.status_code))
-            return HttpResponseNotFound()
-
         isFav = False
-        try:
-            favs = r.json()
-            for i in favs:
-                if i['car'] == carId:
-                    isFav = True
-        except Exception as e:
-            print(e)
-            isFav = False
+        if request.user.is_authenticated:
+            r = requests.get("https://tqsapitests.herokuapp.com/favourite/",
+                             headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+            if r.status_code != 200:
+                print("Favourite " + str(r.status_code))
+                return HttpResponseNotFound()
+
+            try:
+                favs = r.json()
+                for i in favs:
+                    if i['car'] == carId:
+                        isFav = True
+            except Exception as e:
+                print(e)
+                isFav = False
 
         tparams = {
             'row': json,
@@ -385,22 +387,32 @@ def addFavourites(request, favID):
         return redirect('login')
 
 
-def sellerPanel(request):
+def sellerPanel(request, typeOfPanel):
     if request.user.is_authenticated:
-        r = requests.get("https://tqsapitests.herokuapp.com/car/")
+        r = requests.get("https://tqscarapi.herokuapp.com/car/vendor",
+                            headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
         if r.status_code != 200:
+            print(r.status_code)
             return HttpResponseNotFound()
 
         json = r.json()
-
         lista = []
-        for i in json:
-            if i['ownerMail'] == request.user.email:
-                lista.append(i)
+        if typeOfPanel == "selling":
+            for i in json:
+                print(i)
+                if i['carState'] == "selling":
+                    lista.append(i)
+            print(len(lista))
+        else:
+            for i in json:
+                print(i)
+                if i['carState'] == "sold":
+                    lista.append(i)
 
         tparams = {
             'year': datetime.now().year,
-            'database': lista
+            'database': lista,
+            'typeOfPanel' : typeOfPanel
         }
         return render(request, 'sellerPanel.html', tparams)
     else:
@@ -496,21 +508,23 @@ def saveCar(request):
                 request, "Não foi possível criar um carro")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
-        content = {"car": {
-            'brand': request.POST['brand'],
-            'model': request.POST['model'],
-            'month': request.POST['month'],
-            'year': request.POST['year'],
-            'description': request.POST['description'],
-            'typeOfFuel': request.POST['typeOfFuel'],
-            'kilometers': request.POST['kilometers'],
-            'price': request.POST['price'],
-            'ownerMail': request.user.email,
-            'photo': image
-        }
+        content = {
+            "car": {
+                'brand': request.POST['brand'],
+                'model': request.POST['model'],
+                'month': request.POST['month'],
+                'year': request.POST['year'],
+                'description': request.POST['description'],
+                'typeOfFuel': request.POST['typeOfFuel'],
+                'kilometers': request.POST['kilometers'],
+                'price': request.POST['price'],
+                'ownerMail': request.user.email,
+                'photo': image,
+                'carState' : "selling"
+            }
         }
 
-        r = requests.post("https://tqsapitests.herokuapp.com/car/", json=content,
+        r = requests.post("https://tqscarapi.herokuapp.com/car/", json=content,
                           headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
         if r.status_code != 200:
@@ -521,6 +535,21 @@ def saveCar(request):
 
         messages.info(request, "Carro adicionado com sucesso")
         return redirect('sellerpanel')
+
+    else:
+        return redirect('login')
+
+def sellCarFromSale(request, carID):
+    if request.user.is_authenticated:
+        r = requests.put("https://tqscarapi.herokuapp.com/car/sold/" + str(carID),
+                            headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+        if r.status_code != 200:
+            messages.error(request, "Erro ao adicionar como vendido.")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+        messages.info(request, "Alteração do estado para vendido.")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
     else:
         return redirect('login')

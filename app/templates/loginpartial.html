@@ -12,7 +12,7 @@
                 <li {% if request.resolver_match.url_name == 'sellerpanel' %}class="nav-item active"{% endif %}
                     {% if request.resolver_match.url_name == 'boughtSearch' %}class="nav-item active"
                     {% else %}class="nav-item"{% endif %}>
-                    <a class="nav-link" href="{% url 'sellerpanel' %}">Seller Panel</a>
+                    <a class="nav-link" href="/sellerPanel/selling">Seller Panel</a>
                 </li>
             {% endif %}
             <li class="nav-item dropdown">
