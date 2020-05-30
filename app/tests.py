@@ -923,3 +923,61 @@ class TestRegister():
         self.driver.find_element(By.ID, "navbarDropdown").click()
         # 42 | click | linkText=Logout |
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
+
+
+class TestMarkAsSold():
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(
+            command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_markAsSold(self):
+        # Test name: MarkAsSold
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
+        # 2 | setWindowSize | 1060x821 |
+        self.driver.set_window_size(1060, 821)
+        # 3 | click | linkText=Log in |
+        self.driver.find_element(By.LINK_TEXT, "Log in").click()
+        # 4 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 5 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 6 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 7 | doubleClick | id=id_username |
+        element = self.driver.find_element(By.ID, "id_username")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 8 | type | id=id_username |
+        self.driver.find_element(By.ID, "id_username").send_keys(EMAIL)
+        # 9 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 10 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 11 | doubleClick | id=id_password |
+        element = self.driver.find_element(By.ID, "id_password")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 12 | type | id=id_password |
+        self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
+        # 13 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 14 | click | linkText=Seller Panel |
+        self.driver.find_element(By.LINK_TEXT, "Seller Panel").click()
+        # 16 | click | css=tr:nth-child(1) .btn-success > .fa |
+        self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(1) .btn-success > .fa").click()
+        # 17 | assertConfirmation | Are you sure? |
+        assert self.driver.switch_to.alert.text == "Are you sure?"
+        # 18 | webdriverChooseOkOnVisibleConfirmation |  |
+        self.driver.switch_to.alert.accept()
+        # 19 | click | id=navbarDropdown |
+        self.driver.find_element(By.ID, "navbarDropdown").click()
+        # 20 | click | linkText=Logout |
+        self.driver.find_element(By.LINK_TEXT, "Logout").click()
+        # 21 | close |  |
+        self.driver.close()

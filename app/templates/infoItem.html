@@ -85,8 +85,8 @@
                                 <tr>
                                     <td>{{ row.brand }}</td>
                                     <td>{{ row.model }}</td>
-                                    <td>{{ row.year }}</td>
-                                    <td>{{ row.month }}</td>
+                                    <td>{% if row.kilometers > 0 %}{{ row.year }}{% else %}--{% endif %}</td>
+                                    <td>{% if row.kilometers > 0 %}{{ row.month }}{% else %}--{% endif %}</td>
                                 </tr>
                                 </tbody>
                             </table>

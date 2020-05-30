@@ -9,7 +9,18 @@
         {% endfor %}
     {% endif %}
     <div class="row">
-        <div class="col-lg-12" style="text-align: right;">
+        {% if typeOfPanel == "selling" %}
+            <div class="col-lg-6" style="text-align: left;">
+                <a href="/sellerPanel/sold" class="btn btn-primary"><i
+                        class="fa fa-list"> Ver vendas</i></a>
+            </div>
+        {% else %}
+            <div class="col-lg-6" style="text-align: left;">
+                <a href="/sellerPanel/selling" class="btn btn-primary"><i
+                        class="fa fa-list"> Ver carros em venda</i></a>
+            </div>
+        {% endif %}
+        <div class="col-lg-6" style="text-align: right;">
             <a href="/seller/add/" class="btn btn-secondary"><i
                     class="fa fa-plus"> Adicionar carro</i></a>
         </div>
@@ -41,11 +52,18 @@
                 <td> {% if row.kilometers == 0 %}--{% else %}{{ row.kilometers }} {% endif %}</td>
                 <td>{{ row.typeOfFuel }}</td>
                 <td>
-                    <div>
-                        <a href="/seller/edit/{{ row.id }}" class="btn btn-primary"><i class="fa fa-edit"></i></a>
-                        <a href="/seller/delete/{{ row.id }}" onclick="return confirm('Are you sure?');"
-                           class="btn btn-danger"><i class="fa fa-trash"></i></a>
-                    </div>
+                    {% if typeOfPanel == "selling" %}
+                        <div>
+                            <a href="/seller/edit/{{ row.id }}" class="btn btn-primary"><i class="fa fa-edit"></i></a>
+                            <a href="/seller/delete/{{ row.id }}" onclick="return confirm('Are you sure?');"
+                               class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                            <a href="/seller/sold/{{ row.id }}" onclick="return confirm('Are you sure?');"
+                               class="btn btn-success"><i class="fa fa-check"></i></a>
+                        </div>
+                    {% else %}
+                        --
+                    {% endif %}
+
                 </td>
             </tr>
         {% endfor %}

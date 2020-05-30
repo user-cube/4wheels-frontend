@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 from app.forms import SignUpForm
@@ -9,8 +10,16 @@ import requests
 from datetime import datetime
 from base64 import b64encode
 from app.tools.tokenizer import Tokenizer
+from dotenv import load_dotenv
+import os
+import logging
 
 tokenizer = Tokenizer()
+logger = logging.getLogger(__name__)
+
+load_dotenv()
+API = os.getenv('API')
+API2 = os.getenv('API2')
 
 
 def home(request):
@@ -24,8 +33,9 @@ def home(request):
         Spring API.
 
     """
-    r = requests.get("https://tqsapitests.herokuapp.com/car/")
+    r = requests.get(API2 + "car/")
     if r.status_code != 200:
+        print(r.status_code)
         return HttpResponseNotFound()
 
     json = r.json()
@@ -52,12 +62,22 @@ def login(request):
         request: actual request.
 
     Returns:
-        Rendered login page.
+        rendered login page.
     """
-    return render(request, 'login.html')
+    return render(request, 'login.html', {'year': datetime.now().year, })
 
 
 def signup(request):
+    """
+    Allow users to sign up
+    using django register
+    and API Call.
+    Args:
+        request: actual request.
+
+    Returns:
+        sign up page.
+    """
     if request.method == 'POST':
         print(request.FILES)
         print(request.POST)
@@ -73,26 +93,13 @@ def signup(request):
             'username': request.POST['email'],
             'password': request.POST['password1']
         }
-        r = requests.post(
-            "https://tqsapitests.herokuapp.com/register", json=msg)
+        r = requests.post(API +
+                          "register", json=msg)
         if r.status_code != 200:
             print(r.status_code)
             messages.error(request, "Impossível criar conta.")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-        """
-        {
-  "address": "Rua dos Amoras",
-  "city": "Aveiro",
-  "contact": 999999999,
-  "id": 0,
-  "mail": "teste@ua.pt",
-  "name": "Rui Coelho",
-  "nif": 999999999,
-  "photo": "string",
-  "type": 1,
-  "zipCode": "string"
-}
-        """
+
         msg = {
             'name': request.POST['first_name'] + " " + request.POST['last_name'],
             'address': request.POST['morada'],
@@ -106,8 +113,7 @@ def signup(request):
             'id': 0
         }
 
-        print(msg)
-        r = requests.post("https://tqsapitests.herokuapp.com/profile/", json=msg,
+        r = requests.post(API + "profile/", json=msg,
                           headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.POST['email'])})
         if r.status_code != 200:
             print(r.status_code)
@@ -123,11 +129,7 @@ def signup(request):
             return redirect('login')
     else:
         form = SignUpForm()
-    return render(request, 'signUp.html', {'form': form})
-
-
-def successRegister(request):
-    return render(request, 'successregister.html')
+    return render(request, 'signUp.html', {'form': form, 'year': datetime.now().year})
 
 
 def getItem(request, carId):
@@ -143,32 +145,33 @@ def getItem(request, carId):
         specific car id.
     """
     if request.method == 'GET':
-        r = requests.get("https://tqsapitests.herokuapp.com/car/" + str(carId))
+        r = requests.get(API2 + "car/" + str(carId))
         if r.status_code != 200:
             print("Car " + str(r.status_code))
             return HttpResponseNotFound()
         json = r.json()
-        r = requests.get("https://tqsapitests.herokuapp.com/profile/",
+        r = requests.get(API + "profile/",
                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(json['ownerMail'])})
         if r.status_code != 200:
             print("Profile " + str(r.status_code))
             return HttpResponseNotFound()
         seller = r.json()
-        r = requests.get("https://tqsapitests.herokuapp.com/favourite/",
-                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
-        if r.status_code != 200:
-            print("Favourite " + str(r.status_code))
-            return HttpResponseNotFound()
-
         isFav = False
-        try:
-            favs = r.json()
-            for i in favs:
-                if i['car'] == carId:
-                    isFav = True
-        except Exception as e:
-            print(e)
-            isFav = False
+        if request.user.is_authenticated:
+            r = requests.get(API + "favourite/",
+                             headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+            if r.status_code != 200:
+                print("Favourite " + str(r.status_code))
+                return HttpResponseNotFound()
+
+            try:
+                favs = r.json()
+                for i in favs:
+                    if i['car'] == carId:
+                        isFav = True
+            except Exception as e:
+                print(e)
+                isFav = False
 
         tparams = {
             'row': json,
@@ -198,19 +201,19 @@ def search(request):
         isOk = False
         if tipo == "brand":
             r = requests.get(
-                "https://tqsapitests.herokuapp.com/car/brand/" + content)
+                API2 + "car/brand/" + content)
             if r.status_code != 200:
                 return HttpResponseNotFound()
             isOk = True
         if tipo == "model":
             r = requests.get(
-                "https://tqsapitests.herokuapp.com/car/model/" + content)
+                API2 + "car/model/" + content)
             if r.status_code != 200:
                 return HttpResponseNotFound()
             isOk = True
         if tipo == "year":
             r = requests.get(
-                "https://tqsapitests.herokuapp.com/car/year/" + content)
+                API2 + "car/year/" + content)
             if r.status_code != 200:
                 return HttpResponseNotFound()
             isOk = True
@@ -227,6 +230,7 @@ def search(request):
         return redirect('home')
 
 
+@login_required
 def getProfile(request, edit):
     """
     Get user profile information.
@@ -238,7 +242,7 @@ def getProfile(request, edit):
         profile information.
     """
     if request.user.is_authenticated:
-        r = requests.get("https://tqsapitests.herokuapp.com/profile/",
+        r = requests.get(API + "profile/",
                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
         if r.status_code != 200:
             return redirect('home')
@@ -256,6 +260,7 @@ def getProfile(request, edit):
         return redirect('login')
 
 
+@login_required
 def updateProfile(request):
     """
     Update profile information.
@@ -287,7 +292,7 @@ def updateProfile(request):
                 'photo': image
             }
 
-            r = requests.put("https://tqsapitests.herokuapp.com/profile/", json=content,
+            r = requests.put(API + "profile/", json=content,
                              headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
             if r.status_code != 200:
@@ -303,6 +308,7 @@ def updateProfile(request):
         return redirect('login')
 
 
+@login_required
 def getFavourites(request):
     """
     Return all favorites by a user.
@@ -312,42 +318,46 @@ def getFavourites(request):
     Returns:
         A view with all favorites for a user.
     """
-    if request.user.is_authenticated:
-        r = requests.get("https://tqsapitests.herokuapp.com/favourite/",
-                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
-        if r.status_code != 200:
-            return HttpResponseNotFound()
+    if request.method == "GET":
+        if 'user_type' in request.session.keys():
+            if request.session.get('user_type') == 0:
+                r = requests.get(API + "favourite/",
+                                 headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+                if r.status_code != 200:
+                    return HttpResponseNotFound()
 
-        try:
-            json = r.json()
-        except Exception as e:
-            print(e)
-            return render(request, 'favourite.html', {'database': []})
+                try:
+                    json = r.json()
+                except Exception as e:
+                    logger.info(str(e))
+                    return render(request, 'favourite.html', {'database': []})
 
-        ids = []
-        for i in json:
-            ids.append(i['car'])
+                ids = []
+                for i in json:
+                    ids.append(i['car'])
 
-        cars = []
-        for i in ids:
-            print(i)
-            string = "https://tqsapitests.herokuapp.com/car/" + str(i)
-            print(string)
-            car = requests.get(string)
-            if car.status_code == 200:
-                print(car.text)
-                cars.append(car.json())
-                print(cars)
+                cars = []
+                for i in ids:
+                    car = requests.get(API2 + "car/" + str(i))
+                    if car.status_code == 200:
+                        print(car.text)
+                        cars.append(car.json())
+                        print(cars)
 
-        tparams = {
-            'database': cars,
-            'year': datetime.now().year,
-        }
-        return render(request, 'favourite.html', tparams)
+                tparams = {
+                    'database': cars,
+                    'year': datetime.now().year,
+                }
+                return render(request, 'favourite.html', tparams)
+            else:
+                return HttpResponseForbidden()
+        else:
+            return redirect('login')
     else:
-        return redirect('login')
+        return HttpResponseBadRequest()
 
 
+@login_required
 def deleteFavourite(request, favID):
     """
     Delete a item from favourite list.
@@ -358,169 +368,312 @@ def deleteFavourite(request, favID):
     Returns:
         the list of the favourite items.
     """
-    if request.user.is_authenticated:
-        r = requests.delete("https://tqsapitests.herokuapp.com/favourite/" + str(favID),
-                            headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 0:
+            r = requests.delete(API + "favourite/" + str(favID),
+                                headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
-        if r.status_code != 200:
-            messages.error(request, "Não foi possível apagar o favorito.")
+            if r.status_code != 200:
+                messages.error(request, "Não foi possível apagar o favorito.")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+            messages.info(request, "Favorito removido com sucesso.")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-        messages.info(request, "Favorito removido com sucesso.")
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        else:
+            return HttpResponseForbidden()
     else:
         return redirect('login')
 
 
+@login_required
 def addFavourites(request, favID):
-    if request.user.is_authenticated:
-        r = requests.post("https://tqsapitests.herokuapp.com/favourite/" + str(favID),
-                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
-        if r.status_code != 200:
-            messages.error(request, "Erro ao adicionar favorito")
+    """
+    Add a car to favourites.
+    Args:
+        request: actual request.
+        favID: car id to store.
+
+    Returns:
+        car id detail page.
+    """
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 0:
+            r = requests.post(API + "favourite/" + str(favID),
+                              headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+            if r.status_code != 200:
+                messages.error(request, "Erro ao adicionar favorito")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        else:
+            return HttpResponseForbidden()
 
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     else:
         return redirect('login')
 
 
-def sellerPanel(request):
-    if request.user.is_authenticated:
-        r = requests.get("https://tqsapitests.herokuapp.com/car/")
-        if r.status_code != 200:
-            return HttpResponseNotFound()
+@login_required
+def sellerPanel(request, typeOfPanel):
+    """
+    Get seller panel.
+    Args:
+        request: actual request.
+        typeOfPanel: type of panel to
+        be rendered
 
-        json = r.json()
+    Returns:
+        the panel rendered.
+    """
+    if request.method == "GET":
+        if 'user_type' in request.session.keys():
+            if request.session.get('user_type') == 1:
+                r = requests.get(API2 + "car/vendor",
+                                 headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+                if r.status_code != 200:
+                    logger.info("sellerPanel() - API CODE: " + str(r.status_code))
+                    return HttpResponseNotFound()
 
-        lista = []
-        for i in json:
-            if i['ownerMail'] == request.user.email:
-                lista.append(i)
+                json = r.json()
+                lista = []
+                if typeOfPanel == "selling":
+                    for i in json:
+                        if i['carState'] == "selling":
+                            lista.append(i)
+                else:
+                    for i in json:
+                        if i['carState'] == "sold":
+                            lista.append(i)
 
-        tparams = {
-            'year': datetime.now().year,
-            'database': lista
-        }
-        return render(request, 'sellerPanel.html', tparams)
+                tparams = {
+                    'year': datetime.now().year,
+                    'database': lista,
+                    'typeOfPanel': typeOfPanel
+                }
+                return render(request, 'sellerPanel.html', tparams)
+            else:
+                return HttpResponseForbidden()
+        else:
+            return redirect('login')
     else:
-        return redirect('login')
+        return HttpResponseBadRequest()
 
 
+@login_required
 def deleteCarFromSale(request, carID):
-    if request.user.is_authenticated:
-        r = requests.delete("https://tqsapitests.herokuapp.com/car/" + str(carID),
-                            headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+    """
+    Delete a car from sale.
+    Args:
+        request: actual request.
+        carID: car id to be deleted.
 
-        if r.status_code != 200:
-            messages.error(request, "Erro ao apagar item.")
+    Returns:
+        the seller panel with a
+        message.
+    """
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 1:
+            r = requests.delete(API2 + "car/" + str(carID),
+                                headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+            if r.status_code != 200:
+                logger.info("deleteCarFromSale() - API CODE: " + str(r.status_code))
+                messages.error(request, "Erro ao apagar item.")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+            messages.info(request, "Item apagado com sucesso.")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-        messages.info(request, "Item apagado com sucesso.")
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
+        else:
+            return HttpResponseForbidden()
     else:
         return redirect('login')
 
 
+@login_required
 def editCar(request, carID):
-    if request.user.is_authenticated:
-        r = requests.get("https://tqsapitests.herokuapp.com/car/" + str(carID))
-        if r.status_code != 200:
-            messages.error(request, "Erro ao editar item.")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    """
+    Allow user to edit a car.
+    Args:
+        request: actual request.
+        carID: car id to edit.
 
-        return render(request, 'editCar.html', {'row': r.json(), 'year': datetime.now().year})
+    Returns:
+        a rendered page to
+        edit a car.
+    """
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 1:
+            r = requests.get(API2 + "car/" + str(carID))
+            if r.status_code != 200:
+                logger.info("editCar() - API CODE: " + str(r.status_code))
+                messages.error(request, "Erro ao editar item.")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+            return render(request, 'editCar.html', {'row': r.json(), 'year': datetime.now().year})
+        else:
+            return HttpResponseForbidden()
     else:
         return redirect('login')
 
 
+@login_required
 def saveEdit(request):
-    if request.user.is_authenticated and request.method == "POST":
-        try:
-            image = request.FILES['picture'].file.read()
-            b64pic = b64encode(image)
-            image = b64pic.decode("utf-8")
+    """
+    Save a car edited.
+    Args:
+        request: actual request.
 
-        except Exception as e:
-            image = request.POST['photo']
-            print(e)
+    Returns:
+        the car edited by the user.
+    """
+    if request.method == "POST":
+        if 'user_type' in request.session.keys():
+            if request.session.get('user_type') == 1:
+                try:
+                    image = request.FILES['picture'].file.read()
+                    b64pic = b64encode(image)
+                    image = b64pic.decode("utf-8")
 
-        print(request.POST)
+                except Exception as e:
+                    image = request.POST['photo']
+                    print(e)
 
-        content = {
-            'brand': request.POST['brand'],
-            'model': request.POST['model'],
-            'month': request.POST['month'],
-            'year': request.POST['year'],
-            'description': request.POST['description'],
-            'typeOfFuel': request.POST['typeOfFuel'],
-            'kilometers': request.POST['kilometers'],
-            'price': request.POST['price'],
-            'id': request.POST['carID'],
-            'ownerMail': request.user.email,
-            'photo': image
-        }
+                content = {
+                    'brand': request.POST['brand'],
+                    'model': request.POST['model'],
+                    'month': request.POST['month'],
+                    'year': request.POST['year'],
+                    'description': request.POST['description'],
+                    'typeOfFuel': request.POST['typeOfFuel'],
+                    'kilometers': request.POST['kilometers'],
+                    'price': request.POST['price'],
+                    'id': request.POST['carID'],
+                    'ownerMail': request.user.email,
+                    'photo': image
+                }
 
-        r = requests.put("https://tqsapitests.herokuapp.com/car/" + str(request.POST['carID']), json=content,
-                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+                r = requests.put(API2 + "car/" + str(request.POST['carID']), json=content,
+                                 headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
-        if r.status_code != 200:
-            messages.error(
-                request, "Não foi possível atualizar as informações do carro")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+                if r.status_code != 200:
+                    logger.info("saveEdit() - API CODE: " + str(r.status_code))
+                    messages.error(
+                        request, "Não foi possível atualizar as informações do carro")
+                    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
-        messages.info(request, "Informações atualizadas com sucesso")
-        return redirect('sellerpanel')
-
+                messages.info(request, "Informações atualizadas com sucesso")
+                return redirect('sellerpanel', typeOfPanel="selling")
+            else:
+                return HttpResponseForbidden()
+        else:
+            return redirect('login')
     else:
-        return redirect('login')
+        return HttpResponseBadRequest()
 
 
+@login_required
 def addCar(request):
-    if request.user.is_authenticated:
-        return render(request, 'addCar.html')
+    """
+    Add a car to database.
+    Args:
+        request: actual request.
+
+    Returns:
+        a page to add a car
+        into the database.
+    """
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 1:
+            return render(request, 'addCar.html')
+        else:
+            return HttpResponseForbidden()
     else:
         return redirect('login')
 
 
+@login_required
 def saveCar(request):
-    if request.user.is_authenticated and request.method == "POST":
-        try:
-            image = request.FILES['picture'].file.read()
-            b64pic = b64encode(image)
-            image = b64pic.decode("utf-8")
-        except Exception as e:
-            print(e)
-            messages.error(
-                request, "Não foi possível criar um carro")
+    """
+    Sent edited information
+    into the Spring API.
+    Args:
+        request: actual request.
+
+    Returns:
+        the page after save car
+        information.
+    """
+    if request.method == "POST":
+        if 'user_type' in request.session.keys():
+            if request.session.get('user_type') == 1:
+                try:
+                    image = request.FILES['picture'].file.read()
+                    b64pic = b64encode(image)
+                    image = b64pic.decode("utf-8")
+                except Exception as e:
+                    logger.info("saveCar() : Error with image uploading" + str(e))
+                    messages.error(
+                        request, "Não foi possível criar um carro")
+                    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+                content = {
+                    "car": {
+                        'brand': request.POST['brand'],
+                        'model': request.POST['model'],
+                        'month': request.POST['month'],
+                        'year': request.POST['year'],
+                        'description': request.POST['description'],
+                        'typeOfFuel': request.POST['typeOfFuel'],
+                        'kilometers': request.POST['kilometers'],
+                        'price': request.POST['price'],
+                        'ownerMail': request.user.email,
+                        'photo': image,
+                        'carState': "selling"
+                    }
+                }
+
+                r = requests.post(API2 + "car/", json=content,
+                                  headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+                if r.status_code != 200:
+                    logger.info("saveCar() - API CODE: " + str(r.status_code))
+                    messages.error(
+                        request, "Não foi possível adicionar o carro")
+                    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+                messages.info(request, "Carro adicionado com sucesso")
+                return redirect('sellerpanel', typeOfPanel="selling")
+            else:
+                return HttpResponseForbidden()
+        else:
+            return redirect('login')
+    else:
+        return redirect('login')
+
+
+@login_required
+def sellCarFromSale(request, carID):
+    """
+    Mark a car as sold.
+    Args:
+        request: actual request.
+        carID: car to mark as sold.
+
+    Returns:
+        a list with all cars from
+        user.
+    """
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 1:
+            r = requests.put(API2 + "car/sold/" + str(carID),
+                             headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+            if r.status_code != 200:
+                messages.error(request, "Erro ao adicionar como vendido.")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+            messages.info(request, "Alteração do estado para vendido.")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-        content = {"car": {
-            'brand': request.POST['brand'],
-            'model': request.POST['model'],
-            'month': request.POST['month'],
-            'year': request.POST['year'],
-            'description': request.POST['description'],
-            'typeOfFuel': request.POST['typeOfFuel'],
-            'kilometers': request.POST['kilometers'],
-            'price': request.POST['price'],
-            'ownerMail': request.user.email,
-            'photo': image
-        }
-        }
-
-        r = requests.post("https://tqsapitests.herokuapp.com/car/", json=content,
-                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
-
-        if r.status_code != 200:
-            print(r.status_code)
-            messages.error(
-                request, "Não foi possível adicionar o carro")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-        messages.info(request, "Carro adicionado com sucesso")
-        return redirect('sellerpanel')
-
+        else:
+            return HttpResponseForbidden()
     else:
         return redirect('login')

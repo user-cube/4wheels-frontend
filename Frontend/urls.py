@@ -32,10 +32,11 @@ urlpatterns = [
     path('favourite/', views.getFavourites, name="favourite"),
     path('favourites/add/<int:favID>', views.addFavourites, name="addfavourite"),
     path('delete/favourite/<int:favID>', views.deleteFavourite, name="delfavourite"),
-    path('seller/', views.sellerPanel, name="sellerpanel"),
+    path('sellerPanel/<str:typeOfPanel>', views.sellerPanel, name="sellerpanel"),
     path('seller/delete/<int:carID>', views.deleteCarFromSale, name="sellerdelete"),
     path('seller/edit/<int:carID>', views.editCar, name="selleredit"),
     path('seller/edit/save', views.saveEdit, name="saveedit"),
     path('seller/add/', views.addCar, name="addcar"),
-    path('seller/add/save', views.saveCar, name="addcarsave")
+    path('seller/add/save', views.saveCar, name="addcarsave"),
+    path('seller/sold/<int:carID>', views.sellCarFromSale, name="sellcar")
 ]
