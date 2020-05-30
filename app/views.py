@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
@@ -54,6 +54,7 @@ def home(request):
 
     return render(request, 'index.html', tparams)
 
+
 def login(request):
     """
     Return login page.
@@ -63,7 +64,8 @@ def login(request):
     Returns:
         rendered login page.
     """
-    return render(request, 'login.html', {'year': datetime.now().year,})
+    return render(request, 'login.html', {'year': datetime.now().year, })
+
 
 def signup(request):
     """
@@ -129,6 +131,7 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'signUp.html', {'form': form, 'year': datetime.now().year})
 
+
 def getItem(request, carId):
     """
     Get information for a particular item.
@@ -147,7 +150,7 @@ def getItem(request, carId):
             print("Car " + str(r.status_code))
             return HttpResponseNotFound()
         json = r.json()
-        r = requests.get(API +"profile/",
+        r = requests.get(API + "profile/",
                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(json['ownerMail'])})
         if r.status_code != 200:
             print("Profile " + str(r.status_code))
@@ -180,6 +183,7 @@ def getItem(request, carId):
     else:
         return redirect('home')
 
+
 def search(request):
     """
     Allow users to search for brand,
@@ -197,7 +201,7 @@ def search(request):
         isOk = False
         if tipo == "brand":
             r = requests.get(
-               API2 + "car/brand/" + content)
+                API2 + "car/brand/" + content)
             if r.status_code != 200:
                 return HttpResponseNotFound()
             isOk = True
@@ -224,6 +228,7 @@ def search(request):
             return render(request, 'index.html', {'database': [], 'year': datetime.now().year})
     else:
         return redirect('home')
+
 
 @login_required
 def getProfile(request, edit):
@@ -253,6 +258,7 @@ def getProfile(request, edit):
             return render(request, 'profile.html', tparams)
     else:
         return redirect('login')
+
 
 @login_required
 def updateProfile(request):
@@ -301,6 +307,7 @@ def updateProfile(request):
     else:
         return redirect('login')
 
+
 @login_required
 def getFavourites(request):
     """
@@ -311,37 +318,44 @@ def getFavourites(request):
     Returns:
         A view with all favorites for a user.
     """
-    if request.user.is_authenticated:
-        r = requests.get(API + "favourite/",
-                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
-        if r.status_code != 200:
-            return HttpResponseNotFound()
+    if request.method == "GET":
+        if 'user_type' in request.session.keys():
+            if request.session.get('user_type') == 0:
+                r = requests.get(API + "favourite/",
+                                 headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+                if r.status_code != 200:
+                    return HttpResponseNotFound()
 
-        try:
-            json = r.json()
-        except Exception as e:
-            print(e)
-            return render(request, 'favourite.html', {'database': []})
+                try:
+                    json = r.json()
+                except Exception as e:
+                    logger.info(str(e))
+                    return render(request, 'favourite.html', {'database': []})
 
-        ids = []
-        for i in json:
-            ids.append(i['car'])
+                ids = []
+                for i in json:
+                    ids.append(i['car'])
 
-        cars = []
-        for i in ids:
-            car = requests.get(API2 + "car/" + str(i))
-            if car.status_code == 200:
-                print(car.text)
-                cars.append(car.json())
-                print(cars)
+                cars = []
+                for i in ids:
+                    car = requests.get(API2 + "car/" + str(i))
+                    if car.status_code == 200:
+                        print(car.text)
+                        cars.append(car.json())
+                        print(cars)
 
-        tparams = {
-            'database': cars,
-            'year': datetime.now().year,
-        }
-        return render(request, 'favourite.html', tparams)
+                tparams = {
+                    'database': cars,
+                    'year': datetime.now().year,
+                }
+                return render(request, 'favourite.html', tparams)
+            else:
+                return HttpResponseForbidden()
+        else:
+            return redirect('login')
     else:
-        return redirect('login')
+        return HttpResponseBadRequest()
+
 
 @login_required
 def deleteFavourite(request, favID):
@@ -354,31 +368,49 @@ def deleteFavourite(request, favID):
     Returns:
         the list of the favourite items.
     """
-    if request.user.is_authenticated:
-        r = requests.delete(API + "favourite/" + str(favID),
-                            headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 0:
+            r = requests.delete(API + "favourite/" + str(favID),
+                                headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
-        if r.status_code != 200:
-            messages.error(request, "Não foi possível apagar o favorito.")
+            if r.status_code != 200:
+                messages.error(request, "Não foi possível apagar o favorito.")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+            messages.info(request, "Favorito removido com sucesso.")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-        messages.info(request, "Favorito removido com sucesso.")
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        else:
+            return HttpResponseForbidden()
     else:
         return redirect('login')
+
 
 @login_required
 def addFavourites(request, favID):
-    if request.user.is_authenticated:
-        r = requests.post(API + "favourite/" + str(favID),
-                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
-        if r.status_code != 200:
-            messages.error(request, "Erro ao adicionar favorito")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    """
+    Add a car to favourites.
+    Args:
+        request: actual request.
+        favID: car id to store.
 
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    Returns:
+        car id detail page.
+    """
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 0:
+            r = requests.post(API + "favourite/" + str(favID),
+                              headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+            if r.status_code != 200:
+                messages.error(request, "Erro ao adicionar favorito")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        else:
+            return HttpResponseForbidden()
+
     else:
         return redirect('login')
+
 
 @login_required
 def sellerPanel(request, typeOfPanel):
@@ -392,49 +424,69 @@ def sellerPanel(request, typeOfPanel):
     Returns:
         the panel rendered.
     """
-    if request.user.is_authenticated:
-        r = requests.get(API2 + "car/vendor",
-                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
-        if r.status_code != 200:
-            logger.info("sellerPanel() - API CODE: " + str(r.status_code))
-            return HttpResponseNotFound()
+    if request.method == "GET":
+        if 'user_type' in request.session.keys():
+            if request.session.get('user_type') == 1:
+                r = requests.get(API2 + "car/vendor",
+                                 headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+                if r.status_code != 200:
+                    logger.info("sellerPanel() - API CODE: " + str(r.status_code))
+                    return HttpResponseNotFound()
 
-        json = r.json()
-        lista = []
-        if typeOfPanel == "selling":
-            for i in json:
-                if i['carState'] == "selling":
-                    lista.append(i)
+                json = r.json()
+                lista = []
+                if typeOfPanel == "selling":
+                    for i in json:
+                        if i['carState'] == "selling":
+                            lista.append(i)
+                else:
+                    for i in json:
+                        if i['carState'] == "sold":
+                            lista.append(i)
+
+                tparams = {
+                    'year': datetime.now().year,
+                    'database': lista,
+                    'typeOfPanel': typeOfPanel
+                }
+                return render(request, 'sellerPanel.html', tparams)
+            else:
+                return HttpResponseForbidden()
         else:
-            for i in json:
-                if i['carState'] == "sold":
-                    lista.append(i)
-
-        tparams = {
-            'year': datetime.now().year,
-            'database': lista,
-            'typeOfPanel': typeOfPanel
-        }
-        return render(request, 'sellerPanel.html', tparams)
+            return redirect('login')
     else:
-        return redirect('login')
+        return HttpResponseBadRequest()
+
 
 @login_required
 def deleteCarFromSale(request, carID):
-    if request.user.is_authenticated:
-        r = requests.delete(API2 + "car/" + str(carID),
-                            headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+    """
+    Delete a car from sale.
+    Args:
+        request: actual request.
+        carID: car id to be deleted.
 
-        if r.status_code != 200:
-            logger.info("deleteCarFromSale() - API CODE: " + str(r.status_code))
-            messages.error(request, "Erro ao apagar item.")
+    Returns:
+        the seller panel with a
+        message.
+    """
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 1:
+            r = requests.delete(API2 + "car/" + str(carID),
+                                headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+            if r.status_code != 200:
+                logger.info("deleteCarFromSale() - API CODE: " + str(r.status_code))
+                messages.error(request, "Erro ao apagar item.")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+            messages.info(request, "Item apagado com sucesso.")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-        messages.info(request, "Item apagado com sucesso.")
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
+        else:
+            return HttpResponseForbidden()
     else:
         return redirect('login')
+
 
 @login_required
 def editCar(request, carID):
@@ -448,16 +500,20 @@ def editCar(request, carID):
         a rendered page to
         edit a car.
     """
-    if request.user.is_authenticated:
-        r = requests.get(API2 + "car/" + str(carID))
-        if r.status_code != 200:
-            logger.info("editCar() - API CODE: " + str(r.status_code))
-            messages.error(request, "Erro ao editar item.")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 1:
+            r = requests.get(API2 + "car/" + str(carID))
+            if r.status_code != 200:
+                logger.info("editCar() - API CODE: " + str(r.status_code))
+                messages.error(request, "Erro ao editar item.")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
-        return render(request, 'editCar.html', {'row': r.json(), 'year': datetime.now().year})
+            return render(request, 'editCar.html', {'row': r.json(), 'year': datetime.now().year})
+        else:
+            return HttpResponseForbidden()
     else:
         return redirect('login')
+
 
 @login_required
 def saveEdit(request):
@@ -469,44 +525,50 @@ def saveEdit(request):
     Returns:
         the car edited by the user.
     """
-    if request.user.is_authenticated and request.method == "POST":
-        try:
-            image = request.FILES['picture'].file.read()
-            b64pic = b64encode(image)
-            image = b64pic.decode("utf-8")
+    if request.method == "POST":
+        if 'user_type' in request.session.keys():
+            if request.session.get('user_type') == 1:
+                try:
+                    image = request.FILES['picture'].file.read()
+                    b64pic = b64encode(image)
+                    image = b64pic.decode("utf-8")
 
-        except Exception as e:
-            image = request.POST['photo']
-            print(e)
+                except Exception as e:
+                    image = request.POST['photo']
+                    print(e)
 
-        content = {
-            'brand': request.POST['brand'],
-            'model': request.POST['model'],
-            'month': request.POST['month'],
-            'year': request.POST['year'],
-            'description': request.POST['description'],
-            'typeOfFuel': request.POST['typeOfFuel'],
-            'kilometers': request.POST['kilometers'],
-            'price': request.POST['price'],
-            'id': request.POST['carID'],
-            'ownerMail': request.user.email,
-            'photo': image
-        }
+                content = {
+                    'brand': request.POST['brand'],
+                    'model': request.POST['model'],
+                    'month': request.POST['month'],
+                    'year': request.POST['year'],
+                    'description': request.POST['description'],
+                    'typeOfFuel': request.POST['typeOfFuel'],
+                    'kilometers': request.POST['kilometers'],
+                    'price': request.POST['price'],
+                    'id': request.POST['carID'],
+                    'ownerMail': request.user.email,
+                    'photo': image
+                }
 
-        r = requests.put(API2 + "car/" + str(request.POST['carID']), json=content,
-                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+                r = requests.put(API2 + "car/" + str(request.POST['carID']), json=content,
+                                 headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
-        if r.status_code != 200:
-            logger.info("saveEdit() - API CODE: " + str(r.status_code))
-            messages.error(
-                request, "Não foi possível atualizar as informações do carro")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+                if r.status_code != 200:
+                    logger.info("saveEdit() - API CODE: " + str(r.status_code))
+                    messages.error(
+                        request, "Não foi possível atualizar as informações do carro")
+                    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
-        messages.info(request, "Informações atualizadas com sucesso")
-        return redirect('sellerpanel', typeOfPanel="selling")
-
+                messages.info(request, "Informações atualizadas com sucesso")
+                return redirect('sellerpanel', typeOfPanel="selling")
+            else:
+                return HttpResponseForbidden()
+        else:
+            return redirect('login')
     else:
-        return redirect('login')
+        return HttpResponseBadRequest()
+
 
 @login_required
 def addCar(request):
@@ -519,10 +581,14 @@ def addCar(request):
         a page to add a car
         into the database.
     """
-    if request.user.is_authenticated:
-        return render(request, 'addCar.html')
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 1:
+            return render(request, 'addCar.html')
+        else:
+            return HttpResponseForbidden()
     else:
         return redirect('login')
+
 
 @login_required
 def saveCar(request):
@@ -536,47 +602,53 @@ def saveCar(request):
         the page after save car
         information.
     """
-    if request.user.is_authenticated and request.method == "POST":
-        try:
-            image = request.FILES['picture'].file.read()
-            b64pic = b64encode(image)
-            image = b64pic.decode("utf-8")
-        except Exception as e:
-            logger.info("saveCar() : Error with image uploading")
-            messages.error(
-                request, "Não foi possível criar um carro")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    if request.method == "POST":
+        if 'user_type' in request.session.keys():
+            if request.session.get('user_type') == 1:
+                try:
+                    image = request.FILES['picture'].file.read()
+                    b64pic = b64encode(image)
+                    image = b64pic.decode("utf-8")
+                except Exception as e:
+                    logger.info("saveCar() : Error with image uploading")
+                    messages.error(
+                        request, "Não foi possível criar um carro")
+                    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
-        content = {
-            "car": {
-                'brand': request.POST['brand'],
-                'model': request.POST['model'],
-                'month': request.POST['month'],
-                'year': request.POST['year'],
-                'description': request.POST['description'],
-                'typeOfFuel': request.POST['typeOfFuel'],
-                'kilometers': request.POST['kilometers'],
-                'price': request.POST['price'],
-                'ownerMail': request.user.email,
-                'photo': image,
-                'carState': "selling"
-            }
-        }
+                content = {
+                    "car": {
+                        'brand': request.POST['brand'],
+                        'model': request.POST['model'],
+                        'month': request.POST['month'],
+                        'year': request.POST['year'],
+                        'description': request.POST['description'],
+                        'typeOfFuel': request.POST['typeOfFuel'],
+                        'kilometers': request.POST['kilometers'],
+                        'price': request.POST['price'],
+                        'ownerMail': request.user.email,
+                        'photo': image,
+                        'carState': "selling"
+                    }
+                }
 
-        r = requests.post(API2 + "car/", json=content,
-                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+                r = requests.post(API2 + "car/", json=content,
+                                  headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
-        if r.status_code != 200:
-            logger.info("saveCar() - API CODE: " + str(r.status_code))
-            messages.error(
-                request, "Não foi possível adicionar o carro")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+                if r.status_code != 200:
+                    logger.info("saveCar() - API CODE: " + str(r.status_code))
+                    messages.error(
+                        request, "Não foi possível adicionar o carro")
+                    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
-        messages.info(request, "Carro adicionado com sucesso")
-        return redirect('sellerpanel', typeOfPanel="selling")
-
+                messages.info(request, "Carro adicionado com sucesso")
+                return redirect('sellerpanel', typeOfPanel="selling")
+            else:
+                return HttpResponseForbidden()
+        else:
+            return redirect('login')
     else:
         return redirect('login')
+
 
 @login_required
 def sellCarFromSale(request, carID):
@@ -590,16 +662,18 @@ def sellCarFromSale(request, carID):
         a list with all cars from
         user.
     """
-    if request.user.is_authenticated:
-        r = requests.put(API2 + "car/sold/" + str(carID),
-                         headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 1:
+            r = requests.put(API2 + "car/sold/" + str(carID),
+                             headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
-        if r.status_code != 200:
-            messages.error(request, "Erro ao adicionar como vendido.")
+            if r.status_code != 200:
+                messages.error(request, "Erro ao adicionar como vendido.")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+            messages.info(request, "Alteração do estado para vendido.")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
-        messages.info(request, "Alteração do estado para vendido.")
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
+        else:
+            return HttpResponseForbidden()
     else:
         return redirect('login')

@@ -14,6 +14,7 @@ class Tokenizer:
         here we define our key to sign the tokens.
         """
         self.key = os.getenv('KEY')
+        self.api = os.getenv('API')
 
     def genToken(self, email):
         """
@@ -41,7 +42,7 @@ class Tokenizer:
             return True
 
     def getType(self, request):
-        r = requests.get("https://tqsapitests.herokuapp.com/profile/",
+        r = requests.get(self.api + "profile/",
                          headers={'Authorization': 'Bearer ' + self.genToken(request.user.email)})
         if r.status_code != 200:
             return False
