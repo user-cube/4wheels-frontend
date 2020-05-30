@@ -610,7 +610,7 @@ def saveCar(request):
                     b64pic = b64encode(image)
                     image = b64pic.decode("utf-8")
                 except Exception as e:
-                    logger.info("saveCar() : Error with image uploading")
+                    logger.info("saveCar() : Error with image uploading" + str(e))
                     messages.error(
                         request, "Não foi possível criar um carro")
                     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
