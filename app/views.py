@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 API = os.getenv('API')
 API2 = os.getenv('API2')
-
+API3 = os.getenv('API3')
 
 def home(request):
     """
@@ -673,6 +673,50 @@ def sellCarFromSale(request, carID):
 
             messages.info(request, "Alteração do estado para vendido.")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        else:
+            return HttpResponseForbidden()
+    else:
+        return redirect('login')
+
+@login_required
+def listAllUsers(request, typeUser, pageID):
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 2:
+            pageID = pageID - 1
+
+            if typeUser == "vendors":
+                r = requests.get(API3 + "users/vendors?page=" + str(pageID) + "&limit=12",  headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+                if r.status_code != 200:
+                    logger.info("listAllUsers(): API CODE - " +  str(r.status_code))
+                    messages.error(request, "Something went wrong.")
+                    return HttpResponseBadRequest()
+
+                json = r.json()
+            elif typeUser == "buyers":
+                r = requests.get(API3 + "users/buyers?page=" + str(pageID)  + "&limit=12", headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+                if r.status_code != 200:
+                    logger.info("listAllUsers(): API CODE - " + str(r.status_code))
+                    messages.error(request, "Something went wrong.")
+                    return HttpResponseBadRequest()
+
+                json = r.json()
+
+            else:
+                return HttpResponseBadRequest()
+
+
+            tparams = {
+                'database': json,
+                'typeOfList' : typeUser,
+                'prev' : pageID,
+                'next' : pageID + 2,
+                'pageID' : pageID,
+                'year': datetime.now().year,
+            }
+
+            return render(request, 'listAllUsers.html', tparams)
         else:
             return HttpResponseForbidden()
     else:

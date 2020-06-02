@@ -8,6 +8,13 @@
                     {% else %}class="nav-item"{% endif %}>
                     <a class="nav-link" href="{% url 'favourite' %}">Favourites</a>
                 </li>
+            {% endif %}
+            {% if request.session.user_type == 2 %}
+                <li {% if request.resolver_match.url_name == 'sellerpanel' %}class="nav-item active"{% endif %}
+                    {% if request.resolver_match.url_name == 'boughtSearch' %}class="nav-item active"
+                    {% else %}class="nav-item"{% endif %}>
+                    <a class="nav-link" href="/admins/users/buyers/1">Users</a>
+                </li>
             {% else %}
                 <li {% if request.resolver_match.url_name == 'sellerpanel' %}class="nav-item active"{% endif %}
                     {% if request.resolver_match.url_name == 'boughtSearch' %}class="nav-item active"
