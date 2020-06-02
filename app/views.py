@@ -21,8 +21,9 @@ load_dotenv()
 API = os.getenv('API')
 API2 = os.getenv('API2')
 API3 = os.getenv('API3')
+API4 = os.getenv('API4')
 
-def home(request):
+def home(request, carPage=0):
     """
     Get homepage view.
     Args:
@@ -33,7 +34,17 @@ def home(request):
         Spring API.
 
     """
-    r = requests.get(API2 + "car/")
+
+    if request.user.is_authenticated:
+        isTyped = tokenizer.checkUserType(request)
+        if not isTyped:
+            isOk = tokenizer.getType(request)
+            if not isOk:
+                return HttpResponseNotFound()
+
+    if carPage != 0:
+        carPage = carPage - 1
+    r = requests.get(API4 + "car/?page=" + str(carPage) + "&limit=6")
     if r.status_code != 200:
         print(r.status_code)
         return HttpResponseNotFound()
@@ -43,15 +54,15 @@ def home(request):
     tparams = {
         'title': 'Home Page',
         'year': datetime.now().year,
-        'database': json
+        'database': json['data'],
+        ''
+        'carPage' : carPage,
+        'prev': carPage,
+        'next': carPage + 2,
+        'last': json['totalpages'],
+        'real' : carPage + 1,
+        'typeOfPage' : 'cars'
     }
-    if request.user.is_authenticated:
-        isTyped = tokenizer.checkUserType(request)
-        if not isTyped:
-            isOk = tokenizer.getType(request)
-            if not isOk:
-                return HttpResponseNotFound()
-
     return render(request, 'index.html', tparams)
 
 
@@ -413,7 +424,7 @@ def addFavourites(request, favID):
 
 
 @login_required
-def sellerPanel(request, typeOfPanel):
+def sellerPanel(request, typeOfPanel, page):
     """
     Get seller panel.
     Args:
@@ -427,7 +438,8 @@ def sellerPanel(request, typeOfPanel):
     if request.method == "GET":
         if 'user_type' in request.session.keys():
             if request.session.get('user_type') == 1:
-                r = requests.get(API2 + "car/vendor",
+                page = page -1
+                r = requests.get(API4 + "car/vendor?page=" + str(page) + "&limit=6",
                                  headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
                 if r.status_code != 200:
                     logger.info("sellerPanel() - API CODE: " + str(r.status_code))
@@ -447,7 +459,10 @@ def sellerPanel(request, typeOfPanel):
                 tparams = {
                     'year': datetime.now().year,
                     'database': lista,
-                    'typeOfPanel': typeOfPanel
+                    'typeOfPanel': typeOfPanel,
+                    'carPage': page,
+                    'prev': page,
+                    'next': page + 2,
                 }
                 return render(request, 'sellerPanel.html', tparams)
             else:
@@ -641,7 +656,7 @@ def saveCar(request):
                     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
                 messages.info(request, "Carro adicionado com sucesso")
-                return redirect('sellerpanel', typeOfPanel="selling")
+                return redirect('sellerpanel', typeOfPanel="selling", page=1)
             else:
                 return HttpResponseForbidden()
         else:
@@ -706,13 +721,14 @@ def listAllUsers(request, typeUser, pageID):
             else:
                 return HttpResponseBadRequest()
 
-
             tparams = {
-                'database': json,
+                'database': json['data'],
                 'typeOfList' : typeUser,
                 'prev' : pageID,
                 'next' : pageID + 2,
                 'pageID' : pageID,
+                'real' : pageID + 1,
+                'last' : json['totalpages'],
                 'year': datetime.now().year,
             }
 

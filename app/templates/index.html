@@ -45,8 +45,8 @@
             <input type="text" placeholder="Search.." name="search">
             <button type="submit"><i class="fa fa-search"></i></button>
             <input type="radio" name="pesquisa" value="brand" checked> Marca
-            <input type="radio" name="pesquisa" value="model" > Modelo
-            <input type="radio" name="pesquisa" value="year" > Ano
+            <input type="radio" name="pesquisa" value="model"> Modelo
+            <input type="radio" name="pesquisa" value="year"> Ano
         </form>
     </div>
     <br>
@@ -54,7 +54,8 @@
         {% for row in database %}
             <div class="col-md-3 offset-1">
                 <div class="card" style="width: border-box; width: 18rem;">
-                    <img class="card-img-top" src="data:image/jpeg;base64,{{ row.photo }}" style="height: 250px; width: 286px"
+                    <img class="card-img-top" src="data:image/jpeg;base64,{{ row.photo }}"
+                         style="height: 250px; width: 286px"
                          alt="{{ row.model }}">
                     <div class="card-body">
                         <h5 class="card-title">{{ row.brand }} {{ row.model }}</h5>
@@ -65,4 +66,46 @@
             </div>
         {% endfor %}
     </div>
+    <br>
+    {% if typeOfPage == "cars" %}
+        <div class="col-lg-12" style="text-align: center">
+            {% if carPage == 0 %}
+                {% if real == last %}
+                    <a href="/" class="btn btn-secondary disabled"><i class="fa fa-backward"> Inicial</i></a>
+                    <a href="/cars/{{ prev }}" class="btn btn-primary disabled"><i
+                            class="fa fa-arrow-left"> Anterior</i></a>
+                    <a href="/cars/{{ next }}" class="btn btn-primary disabled"><i
+                            class="fa fa-arrow-right"> Próxima</i></a>
+                    <a href="/cars/{{ last }}" class="btn btn-secondary disabled"><i class="fa fa-forward">
+                        Última</i></a>
+                {% else %}
+                    <a href="/" class="btn btn-secondary disabled"><i class="fa fa-backward"> Inicial</i></a>
+                    <a href="/cars/{{ prev }}" class="btn btn-primary disabled"><i
+                            class="fa fa-arrow-left"> Anterior</i></a>
+                    <a href="/cars/{{ next }}" class="btn btn-primary"><i
+                            class="fa fa-arrow-right"> Próxima</i></a>
+                    <a href="/cars/{{ last }}" class="btn btn-secondary"><i class="fa fa-forward">
+                        Última</i></a>
+                {% endif %}
+            {% else %}
+                {% if real == last %}
+                    <a href="/" class="btn btn-secondary"><i class="fa fa-backward"> Inicial</i></a>
+                    <a href="/cars/{{ prev }}" class="btn btn-primary"><i
+                            class="fa fa-arrow-left"> Anterior</i></a>
+                    <a href="/cars/{{ next }}" class="btn btn-primary disabled"><i
+                            class="fa fa-arrow-right"> Próxima</i></a>
+                    <a href="/cars/{{ last }}" class="btn btn-secondary disabled"><i class="fa fa-forward">
+                        Última</i></a>
+                {% else %}
+                    <a href="/" class="btn btn-secondary"><i class="fa fa-backward"> Inicial</i></a>
+                    <a href="/cars/{{ prev }}" class="btn btn-primary"><i
+                            class="fa fa-arrow-left"> Anterior</i></a>
+                    <a href="/cars/{{ next }}" class="btn btn-primary"><i
+                            class="fa fa-arrow-right"> Próxima</i></a>
+                    <a href="/cars/{{ last }}" class="btn btn-secondary"><i class="fa fa-forward">
+                        Última</i></a>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}

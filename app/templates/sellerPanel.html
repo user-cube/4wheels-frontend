@@ -11,12 +11,12 @@
     <div class="row">
         {% if typeOfPanel == "selling" %}
             <div class="col-lg-6" style="text-align: left;">
-                <a href="/sellerPanel/sold" class="btn btn-primary"><i
+                <a href="/sellerPanel/sold/1" class="btn btn-primary"><i
                         class="fa fa-list"> Ver vendas</i></a>
             </div>
         {% else %}
             <div class="col-lg-6" style="text-align: left;">
-                <a href="/sellerPanel/selling" class="btn btn-primary"><i
+                <a href="/sellerPanel/selling/1" class="btn btn-primary"><i
                         class="fa fa-list"> Ver carros em venda</i></a>
             </div>
         {% endif %}
@@ -69,5 +69,22 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <div class="col-lg-12" style="text-align: center">
+        {% if carPage == 0 %}
+            <a href="/sellerPanel/{{typeOfPanel}}/{{ next }}" class="btn btn-primary"><i
+                    class="fa fa-arrow-right"> Próxima</i></a>
+            <a href="/sellerPanel/{{typeOfPanel}}/last" class="btn btn-secondary"><i class="fa fa-forward">
+                Última</i></a>
+        {% else %}
+            <a href="/sellerPanel/{{typeOfPanel}}/1" class="btn btn-secondary"><i class="fa fa-backward"> Inicial</i></a>
+            <a href="/sellerPanel/{{typeOfPanel}}/{{ prev }}" class="btn btn-primary"><i
+                    class="fa fa-arrow-left"> Anterior</i></a>
+            <a href="/sellerPanel/{{typeOfPanel}}/{{ next }}" class="btn btn-primary"><i
+                    class="fa fa-arrow-right"> Próxima</i></a>
+            <a href="/sellerPanel/{{typeOfPanel}}/{{ last }}" class="btn btn-secondary"><i class="fa fa-forward">
+                Última</i></a>
+        {% endif %}
+    </div>
 
 {% endblock %}
