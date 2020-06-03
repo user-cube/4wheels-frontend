@@ -46,7 +46,6 @@ def home(request, carPage=0):
         carPage = carPage - 1
     r = requests.get(API4 + "car/?page=" + str(carPage) + "&limit=6")
     if r.status_code != 200:
-        print(r.status_code)
         return HttpResponseNotFound()
 
     json = r.json()
@@ -89,15 +88,13 @@ def signup(request):
         sign up page.
     """
     if request.method == 'POST':
-        print(request.FILES)
-        print(request.POST)
         try:
             image = request.FILES['picture'].file.read()
             b64pic = b64encode(image)
             image = b64pic.decode("utf-8")
         except Exception as e:
             image = None
-            print(e)
+            logger.error(e)
 
         msg = {
             'username': request.POST['email'],
@@ -106,7 +103,6 @@ def signup(request):
         r = requests.post(API +
                           "register", json=msg)
         if r.status_code != 200:
-            print(r.status_code)
             messages.error(request, "Impossível criar conta.")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
@@ -126,7 +122,6 @@ def signup(request):
         r = requests.post(API + "profile/", json=msg,
                           headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.POST['email'])})
         if r.status_code != 200:
-            print(r.status_code)
             messages.error(request, "Impossível criar conta.")
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
@@ -157,13 +152,11 @@ def getItem(request, carId):
     if request.method == 'GET':
         r = requests.get(API2 + "car/" + str(carId))
         if r.status_code != 200:
-            print("Car " + str(r.status_code))
             return HttpResponseNotFound()
         json = r.json()
         r = requests.get(API + "profile/",
                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(json['ownerMail'])})
         if r.status_code != 200:
-            print("Profile " + str(r.status_code))
             return HttpResponseNotFound()
         seller = r.json()
         isFav = False
@@ -171,7 +164,6 @@ def getItem(request, carId):
             r = requests.get(API + "favourite/",
                              headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
             if r.status_code != 200:
-                print("Favourite " + str(r.status_code))
                 return HttpResponseNotFound()
 
             try:
@@ -180,7 +172,7 @@ def getItem(request, carId):
                     if i['car'] == carId:
                         isFav = True
             except Exception as e:
-                print(e)
+                logger.error(e)
                 isFav = False
 
         tparams = {
@@ -210,6 +202,18 @@ def search(request, pageID):
         tipo = request.GET['pesquisa']
         isOk = False
         pageID = pageID - 1
+        if content == "" or tipo == "":
+            tparams = {
+                'database': [],
+                'carPage': 0,
+                'prev': pageID,
+                'next': pageID + 2,
+                'last': 0,
+                'real': 0,
+                'year': datetime.now().year,
+                'typeOfPage': 'search'
+            }
+            return render(request, 'index.html', tparams)
         if tipo == "brand":
             r = requests.get(
                 API4 + "car/brand/" + content + "?page=" + str(pageID) + "&limit=6")
@@ -309,7 +313,7 @@ def updateProfile(request):
 
             except Exception as e:
                 image = request.POST['photo']
-                print(e)
+                logger.error(e)
 
             content = {
                 'name': request.POST['name'],
@@ -369,9 +373,7 @@ def getFavourites(request):
                 for i in ids:
                     car = requests.get(API2 + "car/" + str(i))
                     if car.status_code == 200:
-                        print(car.text)
                         cars.append(car.json())
-                        print(cars)
 
                 tparams = {
                     'database': cars,
@@ -457,30 +459,33 @@ def sellerPanel(request, typeOfPanel, page):
         if 'user_type' in request.session.keys():
             if request.session.get('user_type') == 1:
                 page = page -1
-                r = requests.get(API4 + "car/vendor?page=" + str(page) + "&limit=6",
-                                 headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
-                if r.status_code != 200:
-                    logger.info("sellerPanel() - API CODE: " + str(r.status_code))
-                    return HttpResponseNotFound()
+
+                if typeOfPanel == "selling":
+
+                    r = requests.get(API4 + "car/vendor/selling?page=" + str(page) + "&limit=6",
+                                     headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+                    if r.status_code != 200:
+                        logger.info("sellerPanel() - API CODE: " + str(r.status_code))
+                        return HttpResponseNotFound()
+
+                else:
+                    r = requests.get(API4 + "car/vendor/sold?page=" + str(page) + "&limit=6",
+                                     headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+                    if r.status_code != 200:
+                        logger.info("sellerPanel() - API CODE: " + str(r.status_code))
+                        return HttpResponseNotFound()
 
                 json = r.json()
-                lista = []
-                if typeOfPanel == "selling":
-                    for i in json:
-                        if i['carState'] == "selling":
-                            lista.append(i)
-                else:
-                    for i in json:
-                        if i['carState'] == "sold":
-                            lista.append(i)
 
                 tparams = {
                     'year': datetime.now().year,
-                    'database': lista,
+                    'database': json['data'],
                     'typeOfPanel': typeOfPanel,
                     'carPage': page,
                     'prev': page,
                     'next': page + 2,
+                    'last': json['totalpages'],
+                    'real': page + 1
                 }
                 return render(request, 'sellerPanel.html', tparams)
             else:
@@ -568,7 +573,7 @@ def saveEdit(request):
 
                 except Exception as e:
                     image = request.POST['photo']
-                    print(e)
+                    logger.error(e)
 
                 content = {
                     'brand': request.POST['brand'],
