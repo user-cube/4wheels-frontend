@@ -55,7 +55,6 @@ def home(request, carPage=0):
         'title': 'Home Page',
         'year': datetime.now().year,
         'database': json['data'],
-        ''
         'carPage' : carPage,
         'prev': carPage,
         'next': carPage + 2,
@@ -195,7 +194,7 @@ def getItem(request, carId):
         return redirect('home')
 
 
-def search(request):
+def search(request, pageID):
     """
     Allow users to search for brand,
     model and year.
@@ -210,33 +209,52 @@ def search(request):
         content = request.GET['search']
         tipo = request.GET['pesquisa']
         isOk = False
+        pageID = pageID - 1
         if tipo == "brand":
             r = requests.get(
-                API2 + "car/brand/" + content)
+                API4 + "car/brand/" + content + "?page=" + str(pageID) + "&limit=6")
             if r.status_code != 200:
                 return HttpResponseNotFound()
             isOk = True
         if tipo == "model":
             r = requests.get(
-                API2 + "car/model/" + content)
+                API4 + "car/model/" + content + "?page=" + str(pageID) + "&limit=6")
             if r.status_code != 200:
                 return HttpResponseNotFound()
             isOk = True
         if tipo == "year":
             r = requests.get(
-                API2 + "car/year/" + content)
+                API4 + "car/year/" + content + "?page=" + str(pageID) + "&limit=6")
             if r.status_code != 200:
                 return HttpResponseNotFound()
             isOk = True
         if isOk:
             json = r.json()
             tparams = {
-                'database': json,
+                'database': json['data'],
+                'carPage': pageID,
+                'prev': pageID,
+                'next': pageID + 2,
+                'last': json['totalpages'],
+                'real': pageID + 1,
                 'year': datetime.now().year,
+                'typeOfPage' : 'search',
+                'content' : content,
+                'tipo' : tipo
             }
             return render(request, 'index.html', tparams)
         else:
-            return render(request, 'index.html', {'database': [], 'year': datetime.now().year})
+            tparams = {
+                'database': [],
+                'carPage': 0,
+                'prev': pageID,
+                'next': pageID + 2,
+                'last': 0,
+                'real': 0,
+                'year': datetime.now().year,
+                'typeOfPage': 'search'
+            }
+            return render(request, 'index.html',  tparams)
     else:
         return redirect('home')
 

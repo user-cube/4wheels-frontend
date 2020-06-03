@@ -41,7 +41,7 @@
 
 {% block content %}
     <div class="col-lg-11 offset-1" style="text-align: center">
-        <form class="example" action="{% url 'search' %}" method="get">
+        <form class="example" action="/search/1" method="get">
             <input type="text" placeholder="Search.." name="search">
             <button type="submit"><i class="fa fa-search"></i></button>
             <input type="radio" name="pesquisa" value="brand" checked> Marca
@@ -67,45 +67,109 @@
         {% endfor %}
     </div>
     <br>
-    {% if typeOfPage == "cars" %}
-        <div class="col-lg-12" style="text-align: center">
-            {% if carPage == 0 %}
-                {% if real == last %}
-                    <a href="/" class="btn btn-secondary disabled"><i class="fa fa-backward"> Inicial</i></a>
-                    <a href="/cars/{{ prev }}" class="btn btn-primary disabled"><i
-                            class="fa fa-arrow-left"> Anterior</i></a>
-                    <a href="/cars/{{ next }}" class="btn btn-primary disabled"><i
-                            class="fa fa-arrow-right"> Próxima</i></a>
-                    <a href="/cars/{{ last }}" class="btn btn-secondary disabled"><i class="fa fa-forward">
-                        Última</i></a>
+    <div class="col-lg-12" style="text-align: center">
+        {% if database|length == 0 %}
+            <a href="/search/1?search={{ content }}&pesquisa={{ tipo }}" class="btn btn-secondary disabled"><i
+                    class="fa fa-backward"> Inicial</i></a>
+            <a href="/search/{{ prev }}?search={{ content }}&pesquisa={{ tipo }}"
+               class="btn btn-primary disabled"><i
+                    class="fa fa-arrow-left"> Anterior</i></a>
+            <a href="/search/{{ next }}?search={{ content }}&pesquisa={{ tipo }}"
+               class="btn btn-primary disabled"><i
+                    class="fa fa-arrow-right"> Próxima</i></a>
+            <a href="/search/{{ last }}?search={{ content }}&pesquisa={{ tipo }}"
+               class="btn btn-secondary disabled"><i class="fa fa-forward">
+                Última</i></a>
+        {% else %}
+            {% if typeOfPage == "search" %}
+                {% if carPage == 0 %}
+                    {% if real == last %}
+                        <a href="/search/1?search={{ content }}&pesquisa={{ tipo }}" class="btn btn-secondary disabled"><i
+                                class="fa fa-backward"> Inicial</i></a>
+                        <a href="/search/{{ prev }}?search={{ content }}&pesquisa={{ tipo }}"
+                           class="btn btn-primary disabled"><i
+                                class="fa fa-arrow-left"> Anterior</i></a>
+                        <a href="/search/{{ next }}?search={{ content }}&pesquisa={{ tipo }}"
+                           class="btn btn-primary disabled"><i
+                                class="fa fa-arrow-right"> Próxima</i></a>
+                        <a href="/search/{{ last }}?search={{ content }}&pesquisa={{ tipo }}"
+                           class="btn btn-secondary disabled"><i class="fa fa-forward">
+                            Última</i></a>
+                    {% else %}
+                        <a href="/" class="btn btn-secondary disabled"><i class="fa fa-backward"> Inicial</i></a>
+                        <a href="/search/{{ prev }}?search={{ content }}&pesquisa={{ tipo }}"
+                           class="btn btn-primary disabled"><i
+                                class="fa fa-arrow-left"> Anterior</i></a>
+                        <a href="/search/{{ next }}?search={{ content }}&pesquisa={{ tipo }}"
+                           class="btn btn-primary {% if database|length == 0 %}disabled{% endif %}"><i
+                                class="fa fa-arrow-right"> Próxima</i></a>
+                        <a href="/search/{{ last }}?search={{ content }}&pesquisa={{ tipo }}"
+                           class="btn btn-secondary{% if database|length == 0 %}disabled{% endif %}"><i
+                                class="fa fa-forward">
+                            Última</i></a>
+                    {% endif %}
                 {% else %}
-                    <a href="/" class="btn btn-secondary disabled"><i class="fa fa-backward"> Inicial</i></a>
-                    <a href="/cars/{{ prev }}" class="btn btn-primary disabled"><i
-                            class="fa fa-arrow-left"> Anterior</i></a>
-                    <a href="/cars/{{ next }}" class="btn btn-primary"><i
-                            class="fa fa-arrow-right"> Próxima</i></a>
-                    <a href="/cars/{{ last }}" class="btn btn-secondary"><i class="fa fa-forward">
-                        Última</i></a>
+                    {% if real == last %}
+                        <a href="/search/1?search={{ content }}&pesquisa={{ tipo }}" class="btn btn-secondary"><i
+                                class="fa fa-backward"> Inicial</i></a>
+                        <a href="/search/{{ prev }}?search={{ content }}&pesquisa={{ tipo }}" class="btn btn-primary"><i
+                                class="fa fa-arrow-left"> Anterior</i></a>
+                        <a href="/search/{{ next }}" class="btn btn-primary disabled"><i
+                                class="fa fa-arrow-right"> Próxima</i></a>
+                        <a href="/search/{{ last }}?search={{ content }}&pesquisa={{ tipo }}"
+                           class="btn btn-secondary disabled"><i class="fa fa-forward">
+                            Última</i></a>
+                    {% else %}
+                        <a href="/search/1?search={{ content }}&pesquisa={{ tipo }}" class="btn btn-secondary"><i
+                                class="fa fa-backward"> Inicial</i></a>
+                        <a href="/search/{{ prev }}?search={{ content }}&pesquisa={{ tipo }}" class="btn btn-primary"><i
+                                class="fa fa-arrow-left"> Anterior</i></a>
+                        <a href="/search/{{ next }}?search={{ content }}&pesquisa={{ tipo }}" class="btn btn-primary"><i
+                                class="fa fa-arrow-right"> Próxima</i></a>
+                        <a href="/search/{{ last }}?search={{ content }}&pesquisa={{ tipo }}" class="btn btn-secondary"><i
+                                class="fa fa-forward">
+                            Última</i></a>
+                    {% endif %}
                 {% endif %}
             {% else %}
-                {% if real == last %}
-                    <a href="/" class="btn btn-secondary"><i class="fa fa-backward"> Inicial</i></a>
-                    <a href="/cars/{{ prev }}" class="btn btn-primary"><i
-                            class="fa fa-arrow-left"> Anterior</i></a>
-                    <a href="/cars/{{ next }}" class="btn btn-primary disabled"><i
-                            class="fa fa-arrow-right"> Próxima</i></a>
-                    <a href="/cars/{{ last }}" class="btn btn-secondary disabled"><i class="fa fa-forward">
-                        Última</i></a>
+                {% if carPage == 0 %}
+                    {% if real == last %}
+                        <a href="/" class="btn btn-secondary disabled"><i class="fa fa-backward"> Inicial</i></a>
+                        <a href="/cars/{{ prev }}" class="btn btn-primary disabled"><i
+                                class="fa fa-arrow-left"> Anterior</i></a>
+                        <a href="/cars/{{ next }}" class="btn btn-primary disabled"><i
+                                class="fa fa-arrow-right"> Próxima</i></a>
+                        <a href="/cars/{{ last }}" class="btn btn-secondary disabled"><i class="fa fa-forward">
+                            Última</i></a>
+                    {% else %}
+                        <a href="/" class="btn btn-secondary disabled"><i class="fa fa-backward"> Inicial</i></a>
+                        <a href="/cars/{{ prev }}" class="btn btn-primary disabled"><i
+                                class="fa fa-arrow-left"> Anterior</i></a>
+                        <a href="/cars/{{ next }}" class="btn btn-primary"><i
+                                class="fa fa-arrow-right"> Próxima</i></a>
+                        <a href="/cars/{{ last }}" class="btn btn-secondary"><i class="fa fa-forward">
+                            Última</i></a>
+                    {% endif %}
                 {% else %}
-                    <a href="/" class="btn btn-secondary"><i class="fa fa-backward"> Inicial</i></a>
-                    <a href="/cars/{{ prev }}" class="btn btn-primary"><i
-                            class="fa fa-arrow-left"> Anterior</i></a>
-                    <a href="/cars/{{ next }}" class="btn btn-primary"><i
-                            class="fa fa-arrow-right"> Próxima</i></a>
-                    <a href="/cars/{{ last }}" class="btn btn-secondary"><i class="fa fa-forward">
-                        Última</i></a>
+                    {% if real == last %}
+                        <a href="/" class="btn btn-secondary"><i class="fa fa-backward"> Inicial</i></a>
+                        <a href="/cars/{{ prev }}" class="btn btn-primary"><i
+                                class="fa fa-arrow-left"> Anterior</i></a>
+                        <a href="/cars/{{ next }}" class="btn btn-primary disabled"><i
+                                class="fa fa-arrow-right"> Próxima</i></a>
+                        <a href="/cars/{{ last }}" class="btn btn-secondary disabled"><i class="fa fa-forward">
+                            Última</i></a>
+                    {% else %}
+                        <a href="/" class="btn btn-secondary"><i class="fa fa-backward"> Inicial</i></a>
+                        <a href="/cars/{{ prev }}" class="btn btn-primary"><i
+                                class="fa fa-arrow-left"> Anterior</i></a>
+                        <a href="/cars/{{ next }}" class="btn btn-primary"><i
+                                class="fa fa-arrow-right"> Próxima</i></a>
+                        <a href="/cars/{{ last }}" class="btn btn-secondary"><i class="fa fa-forward">
+                            Última</i></a>
+                    {% endif %}
                 {% endif %}
             {% endif %}
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
 {% endblock %}
