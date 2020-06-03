@@ -981,3 +981,117 @@ class TestMarkAsSold():
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
         # 21 | close |  |
         self.driver.close()
+
+
+class TestCarsPagination():
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(
+            command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_carsPagination(self):
+        # Test name: CarsPagination
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
+        # 2 | setWindowSize | 1069x825 |
+        self.driver.set_window_size(1069, 825)
+        # 3 | click | linkText=Log in |
+        self.driver.find_element(By.LINK_TEXT, "Log in").click()
+        # 4 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 5 | type | id=id_username | ruicoelho@av.it.pt
+        self.driver.find_element(By.ID, "id_username").send_keys(EMAIL)
+        # 6 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 7 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 8 | doubleClick | id=id_password |
+        element = self.driver.find_element(By.ID, "id_password")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 9 | type | id=id_password | Abcd1234!
+        self.driver.find_element(By.ID, "id_password").send_keys(PASSWORD)
+        # 10 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 11 | click | linkText=Próxima |
+        self.driver.find_element(By.LINK_TEXT, "Próxima").click()
+        # 12 | click | css=.fa-forward |
+        self.driver.find_element(By.CSS_SELECTOR, ".fa-forward").click()
+        # 13 | click | css=.fa-backward |
+        self.driver.find_element(By.CSS_SELECTOR, ".fa-backward").click()
+        # 14 | click | name=search |
+        self.driver.find_element(By.NAME, "search").click()
+        # 15 | type | name=search | T
+        self.driver.find_element(By.NAME, "search").send_keys("T")
+        # 16 | click | css=.example > button |
+        self.driver.find_element(By.CSS_SELECTOR, ".example > button").click()
+        # 17 | click | linkText=Próxima |
+        self.driver.find_element(By.LINK_TEXT, "Próxima").click()
+        # 18 | click | css=.fa-forward |
+        self.driver.find_element(By.CSS_SELECTOR, ".fa-forward").click()
+        # 19 | click | css=.fa-backward |
+        self.driver.find_element(By.CSS_SELECTOR, ".fa-backward").click()
+        # 20 | click | id=navbarDropdown |
+        self.driver.find_element(By.ID, "navbarDropdown").click()
+        # 21 | click | linkText=Logout |
+        self.driver.find_element(By.LINK_TEXT, "Logout").click()
+
+
+class TestUsersPagination():
+    def setUp(self) -> None:
+        self.driver = webdriver.Remote(
+            command_executor='http://localhost:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+        self.vars = {}
+
+    def tearDown(self) -> None:
+        self.driver.quit()
+
+    def test_users(self):
+        # Test name: Users
+        # Step # | name | target | value
+        # 1 | open | / |
+        self.driver.get("https://tqsfrontendtest.herokuapp.com/")
+        # 2 | setWindowSize | 1070x827 |
+        self.driver.set_window_size(1070, 827)
+        # 3 | click | css=.navbar |
+        self.driver.find_element(By.CSS_SELECTOR, ".navbar").click()
+        # 4 | click | linkText=Log in |
+        self.driver.find_element(By.LINK_TEXT, "Log in").click()
+        # 5 | click | id=id_username |
+        self.driver.find_element(By.ID, "id_username").click()
+        # 6 | type | id=id_username | ruicoelho@av.it.pt
+        self.driver.find_element(By.ID, "id_username").send_keys(PASSWORD)
+        # 7 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 8 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 9 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 10 | doubleClick | id=id_password |
+        element = self.driver.find_element(By.ID, "id_password")
+        actions = ActionChains(self.driver)
+        actions.double_click(element).perform()
+        # 11 | click | id=id_password |
+        self.driver.find_element(By.ID, "id_password").click()
+        # 12 | type | id=id_password | Abcd1234!
+        self.driver.find_element(By.ID, "id_password").send_keys(EMAIL2)
+        # 13 | click | css=.btn |
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        # 14 | click | linkText=Users |
+        self.driver.find_element(By.LINK_TEXT, "Users").click()
+        # 15 | click | css=.col-lg-12 |
+        self.driver.find_element(By.CSS_SELECTOR, ".col-lg-12").click()
+        # 16 | click | css=p |
+        self.driver.find_element(By.CSS_SELECTOR, "p").click()
+        # 17 | click | css=.fa-list |
+        self.driver.find_element(By.CSS_SELECTOR, ".fa-list").click()
+        # 18 | click | css=.body-content |
+        self.driver.find_element(By.CSS_SELECTOR, ".body-content").click()
+        # 19 | click | id=navbarDropdown |
+        self.driver.find_element(By.ID, "navbarDropdown").click()
+        # 20 | click | linkText=Logout |
+        self.driver.find_element(By.LINK_TEXT, "Logout").click()
