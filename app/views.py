@@ -19,9 +19,6 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 API = os.getenv('API')
-API2 = os.getenv('API2')
-API3 = os.getenv('API3')
-API4 = os.getenv('API4')
 
 def home(request, carPage=0):
     """
@@ -44,7 +41,7 @@ def home(request, carPage=0):
 
     if carPage != 0:
         carPage = carPage - 1
-    r = requests.get(API4 + "car/?page=" + str(carPage) + "&limit=6")
+    r = requests.get(API + "car/?page=" + str(carPage) + "&limit=6")
     if r.status_code != 200:
         return HttpResponseNotFound()
 
@@ -150,7 +147,7 @@ def getItem(request, carId):
         specific car id.
     """
     if request.method == 'GET':
-        r = requests.get(API2 + "car/" + str(carId))
+        r = requests.get(API + "car/" + str(carId))
         if r.status_code != 200:
             return HttpResponseNotFound()
         json = r.json()
@@ -216,19 +213,19 @@ def search(request, pageID):
             return render(request, 'index.html', tparams)
         if tipo == "brand":
             r = requests.get(
-                API4 + "car/brand/" + content + "?page=" + str(pageID) + "&limit=6")
+                API + "car/brand/" + content + "?page=" + str(pageID) + "&limit=6")
             if r.status_code != 200:
                 return HttpResponseNotFound()
             isOk = True
         if tipo == "model":
             r = requests.get(
-                API4 + "car/model/" + content + "?page=" + str(pageID) + "&limit=6")
+                API + "car/model/" + content + "?page=" + str(pageID) + "&limit=6")
             if r.status_code != 200:
                 return HttpResponseNotFound()
             isOk = True
         if tipo == "year":
             r = requests.get(
-                API4 + "car/year/" + content + "?page=" + str(pageID) + "&limit=6")
+                API + "car/year/" + content + "?page=" + str(pageID) + "&limit=6")
             if r.status_code != 200:
                 return HttpResponseNotFound()
             isOk = True
@@ -371,7 +368,7 @@ def getFavourites(request):
 
                 cars = []
                 for i in ids:
-                    car = requests.get(API2 + "car/" + str(i))
+                    car = requests.get(API + "car/" + str(i))
                     if car.status_code == 200:
                         cars.append(car.json())
 
@@ -462,14 +459,14 @@ def sellerPanel(request, typeOfPanel, page):
 
                 if typeOfPanel == "selling":
 
-                    r = requests.get(API4 + "car/vendor/selling?page=" + str(page) + "&limit=6",
+                    r = requests.get(API + "car/vendor/selling?page=" + str(page) + "&limit=6",
                                      headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
                     if r.status_code != 200:
                         logger.info("sellerPanel() - API CODE: " + str(r.status_code))
                         return HttpResponseNotFound()
 
                 else:
-                    r = requests.get(API4 + "car/vendor/sold?page=" + str(page) + "&limit=6",
+                    r = requests.get(API + "car/vendor/sold?page=" + str(page) + "&limit=6",
                                      headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
                     if r.status_code != 200:
                         logger.info("sellerPanel() - API CODE: " + str(r.status_code))
@@ -510,7 +507,7 @@ def deleteCarFromSale(request, carID):
     """
     if 'user_type' in request.session.keys():
         if request.session.get('user_type') == 1:
-            r = requests.delete(API2 + "car/" + str(carID),
+            r = requests.delete(API + "car/" + str(carID),
                                 headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
             if r.status_code != 200:
@@ -540,7 +537,7 @@ def editCar(request, carID):
     """
     if 'user_type' in request.session.keys():
         if request.session.get('user_type') == 1:
-            r = requests.get(API2 + "car/" + str(carID))
+            r = requests.get(API + "car/" + str(carID))
             if r.status_code != 200:
                 logger.info("editCar() - API CODE: " + str(r.status_code))
                 messages.error(request, "Erro ao editar item.")
@@ -589,7 +586,7 @@ def saveEdit(request):
                     'photo': image
                 }
 
-                r = requests.put(API2 + "car/" + str(request.POST['carID']), json=content,
+                r = requests.put(API + "car/" + str(request.POST['carID']), json=content,
                                  headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
                 if r.status_code != 200:
@@ -669,7 +666,7 @@ def saveCar(request):
                     }
                 }
 
-                r = requests.post(API2 + "car/", json=content,
+                r = requests.post(API + "car/", json=content,
                                   headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
                 if r.status_code != 200:
@@ -702,7 +699,7 @@ def sellCarFromSale(request, carID):
     """
     if 'user_type' in request.session.keys():
         if request.session.get('user_type') == 1:
-            r = requests.put(API2 + "car/sold/" + str(carID),
+            r = requests.put(API + "car/sold/" + str(carID),
                              headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
             if r.status_code != 200:
@@ -734,7 +731,7 @@ def listAllUsers(request, typeUser, pageID):
             pageID = pageID - 1
 
             if typeUser == "vendors":
-                r = requests.get(API3 + "users/vendors?page=" + str(pageID) + "&limit=12",  headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+                r = requests.get(API + "users/vendors?page=" + str(pageID) + "&limit=12",  headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
                 if r.status_code != 200:
                     logger.info("listAllUsers(): API CODE - " +  str(r.status_code))
@@ -743,7 +740,7 @@ def listAllUsers(request, typeUser, pageID):
 
                 json = r.json()
             elif typeUser == "buyers":
-                r = requests.get(API3 + "users/buyers?page=" + str(pageID)  + "&limit=12", headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+                r = requests.get(API + "users/buyers?page=" + str(pageID)  + "&limit=12", headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
                 if r.status_code != 200:
                     logger.info("listAllUsers(): API CODE - " + str(r.status_code))
