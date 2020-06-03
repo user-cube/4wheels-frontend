@@ -27,7 +27,7 @@ def home(request, carPage=0):
     """
     Get homepage view.
     Args:
-        request: actual request.
+        request: the request info.
 
     Returns:
         the homepage rendered after fetch
@@ -68,7 +68,7 @@ def login(request):
     """
     Return login page.
     Args:
-        request: actual request.
+        request: the request info.
 
     Returns:
         rendered login page.
@@ -82,7 +82,7 @@ def signup(request):
     using django register
     and API Call.
     Args:
-        request: actual request.
+        request: the request info.
 
     Returns:
         sign up page.
@@ -141,7 +141,7 @@ def getItem(request, carId):
     """
     Get information for a particular item.
     Args:
-        request: actual request.
+        request: the request info.
         carId: car id to display
         information
 
@@ -191,7 +191,7 @@ def search(request, pageID):
     Allow users to search for brand,
     model and year.
     Args:
-        request: actual request.
+        request: the request info.
 
     Returns:
         a rendered view with the
@@ -268,7 +268,7 @@ def getProfile(request, edit):
     """
     Get user profile information.
     Args:
-        request: actual request.
+        request: the request info.
 
     Returns:
         a view with all user
@@ -298,7 +298,7 @@ def updateProfile(request):
     """
     Update profile information.
     Args:
-        request: actual request.
+        request: the request info.
 
     Returns:
         the profile edited or an
@@ -393,7 +393,7 @@ def deleteFavourite(request, favID):
     """
     Delete a item from favourite list.
     Args:
-        request:actual request.
+        request:the request info.
         favID: favourite (item) id.
 
     Returns:
@@ -421,7 +421,7 @@ def addFavourites(request, favID):
     """
     Add a car to favourites.
     Args:
-        request: actual request.
+        request: the request info.
         favID: car id to store.
 
     Returns:
@@ -448,7 +448,7 @@ def sellerPanel(request, typeOfPanel, page):
     """
     Get seller panel.
     Args:
-        request: actual request.
+        request: the request info.
         typeOfPanel: type of panel to
         be rendered
 
@@ -501,7 +501,7 @@ def deleteCarFromSale(request, carID):
     """
     Delete a car from sale.
     Args:
-        request: actual request.
+        request: the request info.
         carID: car id to be deleted.
 
     Returns:
@@ -531,7 +531,7 @@ def editCar(request, carID):
     """
     Allow user to edit a car.
     Args:
-        request: actual request.
+        request: the request info.
         carID: car id to edit.
 
     Returns:
@@ -558,7 +558,7 @@ def saveEdit(request):
     """
     Save a car edited.
     Args:
-        request: actual request.
+        request: the request info.
 
     Returns:
         the car edited by the user.
@@ -613,7 +613,7 @@ def addCar(request):
     """
     Add a car to database.
     Args:
-        request: actual request.
+        request: the request info.
 
     Returns:
         a page to add a car
@@ -634,7 +634,7 @@ def saveCar(request):
     Sent edited information
     into the Spring API.
     Args:
-        request: actual request.
+        request: the request info.
 
     Returns:
         the page after save car
@@ -693,7 +693,7 @@ def sellCarFromSale(request, carID):
     """
     Mark a car as sold.
     Args:
-        request: actual request.
+        request: the request info.
         carID: car to mark as sold.
 
     Returns:
@@ -718,6 +718,17 @@ def sellCarFromSale(request, carID):
 
 @login_required
 def listAllUsers(request, typeUser, pageID):
+    """
+    List all users according
+    the panel type.
+    Args:
+        request: the request info.
+        typeUser: type of user to search
+        pageID: page ID
+
+    Returns:
+        list of all users by type.
+    """
     if 'user_type' in request.session.keys():
         if request.session.get('user_type') == 2:
             pageID = pageID - 1
