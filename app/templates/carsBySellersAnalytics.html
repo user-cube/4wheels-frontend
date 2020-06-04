@@ -53,14 +53,15 @@
                         painel</i></a>
                 </div>
                 <div style="text-align: right">
-
                     {% if  typeOfChart == "all" %}
+                        <a href="/analytics/general" class="btn btn-secondary"><i class="fa fa-table"></i> Gerais</a>
                         <a href="/analytics/sold" class="btn btn-primary"><i class="fa fa-bar-chart"></i> Carros
                             vendidos</a>
                         <a href="/analytics/selling" class="btn btn-success"><i class="fa fa-bar-chart"></i> Carros
                             à
                             venda</a>
                     {% else %}
+                        <a href="/analytics/general" class="btn btn-secondary"><i class="fa fa-table"></i> Gerais</a>
                         <a href="/analytics/all" class="btn btn-primary"><i class="fa fa-bar-chart"></i> Carros
                             registados</a>
                         {% if typeOfChart == "selling" %}

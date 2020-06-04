@@ -150,18 +150,23 @@ def getItem(request, carId):
     if request.method == 'GET':
         r = requests.get(API + "car/" + str(carId))
         if r.status_code != 200:
+            print(r.status_code)
             return HttpResponseNotFound()
         json = r.json()
+
         r = requests.get(API + "profile/",
                          headers={'Authorization': 'Bearer ' + tokenizer.genToken(json['ownerMail'])})
         if r.status_code != 200:
+            print(r.status_code)
             return HttpResponseNotFound()
         seller = r.json()
         isFav = False
+
         if request.user.is_authenticated:
             r = requests.get(API + "favourite/",
                              headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
             if r.status_code != 200:
+                print(r.status_code)
                 return HttpResponseNotFound()
 
             try:
@@ -520,7 +525,7 @@ def deleteCarFromSale(request, carID):
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
             messages.info(request, "Item apagado com sucesso.")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+            return redirect('sellerpanel', typeOfPanel="selling", page=1)
         else:
             return HttpResponseForbidden()
     else:
@@ -600,7 +605,7 @@ def saveEdit(request):
                     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
                 messages.info(request, "Informações atualizadas com sucesso")
-                return redirect('sellerpanel', typeOfPanel="selling")
+                return redirect('sellerpanel', typeOfPanel="selling", page=1)
             else:
                 return HttpResponseForbidden()
         else:
@@ -712,7 +717,7 @@ def sellCarFromSale(request, carID):
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
             messages.info(request, "Alteração do estado para vendido.")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+            return redirect('sellerpanel', typeOfPanel="selling", page=1)
         else:
             return HttpResponseForbidden()
     else:
@@ -782,10 +787,20 @@ def listAllUsers(request, typeUser, pageID):
 
 @login_required
 def generateAnalytics(request, typeOfChart):
+    """
+    Generate analytics page.
+    Args:
+        request: the request info.
+        typeOfChart: type of page to generate
+
+    Returns:
+        a page rendered according to
+        the typeOfCharts.
+    """
     if 'user_type' in request.session.keys():
         if request.session.get('user_type') == 2:
             if typeOfChart == "selling":
-                r = requests.get(API + "users/vendors/cars/selling",
+                r = requests.get(API + "analytics/vendors/cars/selling",
                                  headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
                 if r.status_code != 200:
@@ -795,7 +810,7 @@ def generateAnalytics(request, typeOfChart):
                     messages.error(request, "Something went wrong.")
                     return HttpResponseBadRequest()
             if typeOfChart == "sold":
-                r = requests.get(API + "users/vendors/cars/sold",
+                r = requests.get(API + "analytics/vendors/cars/sold",
                                  headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
                 if r.status_code != 200:
@@ -805,7 +820,7 @@ def generateAnalytics(request, typeOfChart):
                     return HttpResponseBadRequest()
 
             if typeOfChart == "all":
-                r = requests.get(API + "users/vendors/cars/registered",
+                r = requests.get(API + "analytics/vendors/cars/registered",
                                  headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
                 if r.status_code != 200:
@@ -813,6 +828,20 @@ def generateAnalytics(request, typeOfChart):
                                 str(r.status_code))
                     messages.error(request, "Something went wrong.")
                     return HttpResponseBadRequest()
+
+            if typeOfChart == "general":
+                r = requests.get(API + "analytics/",
+                                 headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+                if r.status_code != 200:
+                    logger.info("getGeneralAnalysis(): API CODE - " +
+                                str(r.status_code))
+                    messages.error(request, "Something went wrong.")
+                    return HttpResponseBadRequest()
+                json = r.json()
+
+                return render(request, "generalAnalytics.html", {'year': datetime.now().year, 'database': json})
+
             json = r.json()
             json = json['data']
             json.insert(0, ['Nome', 'Nº Carros'])
