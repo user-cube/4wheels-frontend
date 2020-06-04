@@ -10,14 +10,20 @@
     {% endif %}
     <div class="row">
         {% if typeOfList == "vendors" %}
-            <div class="col-lg-6" style="text-align: left;">
-                <a href="/admins/users/buyers/1" class="btn btn-primary"><i
-                        class="fa fa-list"> Ver todos os compradores</i></a>
+            <div class="col-lg-12">
+                <div style="text-align: right">
+                    <a href="/admins/users/buyers/1" class="btn btn-primary"><i
+                            class="fa fa-list"></i> Ver compradores</a>
+                    <a href="/analytics/all" class="btn btn-success"><i class="fa fa-bar-chart"></i> Estatísticas</a>
+                </div>
             </div>
         {% else %}
-            <div class="col-lg-6" style="text-align: left;">
-                <a href="/admins/users/vendors/1" class="btn btn-primary"><i
-                        class="fa fa-list"> Ver todos os vendedores</i></a>
+            <div class="col-lg-12">
+                <div style="text-align: right">
+                    <a href="/admins/users/vendors/1" class="btn btn-primary"><i
+                            class="fa fa-list"></i> Ver vendedores</a>
+                    <a href="/analytics/all" class="btn btn-success"><i class="fa fa-bar-chart"></i> Estatísticas</a>
+                </div>
             </div>
         {% endif %}
     </div>

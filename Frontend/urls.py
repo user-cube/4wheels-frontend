@@ -40,5 +40,6 @@ urlpatterns = [
     path('seller/add/', views.addCar, name="addcar"),
     path('seller/add/save', views.saveCar, name="addcarsave"),
     path('seller/sold/<int:carID>', views.sellCarFromSale, name="sellcar"),
-    path('admins/users/<str:typeUser>/<int:pageID>', views.listAllUsers, name="listallusers")
+    path('admins/users/<str:typeUser>/<int:pageID>', views.listAllUsers, name="listallusers"),
+    path('analytics/<str:typeOfChart>', views.generateAnalytics, name="analytics")
 ]

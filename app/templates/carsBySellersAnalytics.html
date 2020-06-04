@@ -1,0 +1,83 @@
+{% extends 'layout.html' %}
+
+{% block headers %}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages': ['bar']});
+        google.charts.setOnLoadCallback(drawStuff);
+
+        console.log({{ lista | safe }});
+
+        function drawStuff() {
+            var data = new google.visualization.arrayToDataTable({{ lista | safe }});
+
+            var options = {
+                width: 800,
+                chart: {
+                    title: '4wheels',
+                    subtitle: 'Carros por vendedor'
+                },
+                bars: 'vertical', // Required for Material Bar Charts.
+                series: {
+                    0: {axis: 'Stock existente'}, // Bind series 0 to an axis named 'distance'.
+                },
+                axes: {
+                    x: {
+                        distance: {label: 'parsecs'}, // Bottom x-axis.
+                        brightness: {side: 'top', label: 'apparent magnitude'} // Top x-axis.
+                    }
+                }
+            };
+
+            var chart = new google.charts.Bar(document.getElementById('dual_x_div'));
+            chart.draw(data, options);
+        };
+    </script>
+
+{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags %}
+                <script>alert("{{ message }}")</script> {% endif %}
+
+        {% endfor %}
+    {% endif %}
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div style="text-align: left">
+                    <a href="/admins/users/buyers/1" class="btn btn-secondary"><i class="fa fa-arrow-left"> Voltar ao
+                        painel</i></a>
+                </div>
+                <div style="text-align: right">
+                    {% if  typeOfChart == "all" %}
+                        <a href="/analytics/general" class="btn btn-secondary"><i class="fa fa-table"></i> Gerais</a>
+                        <a href="/analytics/sold" class="btn btn-primary"><i class="fa fa-bar-chart"></i> Carros
+                            vendidos</a>
+                        <a href="/analytics/selling" class="btn btn-success"><i class="fa fa-bar-chart"></i> Carros
+                            à
+                            venda</a>
+                    {% else %}
+                        <a href="/analytics/general" class="btn btn-secondary"><i class="fa fa-table"></i> Gerais</a>
+                        <a href="/analytics/all" class="btn btn-primary"><i class="fa fa-bar-chart"></i> Carros
+                            registados</a>
+                        {% if typeOfChart == "selling" %}
+                            <a href="/analytics/sold" class="btn btn-success"><i class="fa fa-bar-chart"></i> Carros
+                                vendidos</a>
+                        {% else %}
+                            <a href="/analytics/selling" class="btn btn-success"><i class="fa fa-bar-chart"></i> Carros
+                                à
+                                venda</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div id="dual_x_div" style="width: max-content; height: 500px; margin: 0 auto !important;"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
