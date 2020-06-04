@@ -768,3 +768,43 @@ def listAllUsers(request, typeUser, pageID):
             return HttpResponseForbidden()
     else:
         return redirect('login')
+
+@login_required
+def generateAnalytics(request, typeOfChart):
+    if 'user_type' in request.session.keys():
+        if request.session.get('user_type') == 2:
+            if typeOfChart == "selling":
+                r = requests.get(API + "users/vendors/cars/selling",
+                                 headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+                if r.status_code != 200:
+                    logger.info("listAllUsers(): API CODE - " + str(r.status_code))
+                    print(r.status_code)
+                    messages.error(request, "Something went wrong.")
+                    return HttpResponseBadRequest()
+            if typeOfChart == "sold":
+                r = requests.get(API + "users/vendors/cars/sold",
+                                 headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+                if r.status_code != 200:
+                    logger.info("listAllUsers(): API CODE - " + str(r.status_code))
+                    messages.error(request, "Something went wrong.")
+                    return HttpResponseBadRequest()
+
+            if typeOfChart == "all":
+                r = requests.get(API + "users/vendors/cars/registered",
+                                 headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
+
+                if r.status_code != 200:
+                    logger.info("listAllUsers(): API CODE - " + str(r.status_code))
+                    messages.error(request, "Something went wrong.")
+                    return HttpResponseBadRequest()
+            json = r.json()
+            json = json['data']
+            json.insert(0, ['Nome', 'Nº Carros'])
+
+            return render(request, 'carsBySellersAnalytics.html', {'year': datetime.now().year, 'lista': json, 'typeOfChart' : typeOfChart})
+        else:
+            return HttpResponseForbidden()
+    else:
+        return redirect('login')
