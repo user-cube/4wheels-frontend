@@ -47,16 +47,35 @@
     <br>
     <div class="container">
         <div class="row">
-            <div class="col-lg-12" style="text-align: right">
-                <a href="/analytics/all" class="btn btn-primary">Carros registados na plataforma</a>
-                {% if typeOfChart == "selling" %}
-                <a href="/analytics/sold" class="btn btn-primary">Ver carros vendidos por vendedor</a>
-                {% else %}
-                <a href="/analytics/selling" class="btn btn-primary">Ver carros à venda por vendedor</a>
-                {% endif %}
+            <div class="col-lg-12">
+                <div style="text-align: left">
+                    <a href="/admins/users/buyers/1" class="btn btn-secondary"><i class="fa fa-arrow-left"> Voltar ao
+                        painel</i></a>
+                </div>
+                <div style="text-align: right">
+
+                    {% if  typeOfChart == "all" %}
+                        <a href="/analytics/sold" class="btn btn-primary"><i class="fa fa-bar-chart"></i> Carros
+                            vendidos</a>
+                        <a href="/analytics/selling" class="btn btn-success"><i class="fa fa-bar-chart"></i> Carros
+                            à
+                            venda</a>
+                    {% else %}
+                        <a href="/analytics/all" class="btn btn-primary"><i class="fa fa-bar-chart"></i> Carros
+                            registados</a>
+                        {% if typeOfChart == "selling" %}
+                            <a href="/analytics/sold" class="btn btn-success"><i class="fa fa-bar-chart"></i> Carros
+                                vendidos</a>
+                        {% else %}
+                            <a href="/analytics/selling" class="btn btn-success"><i class="fa fa-bar-chart"></i> Carros
+                                à
+                                venda</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
             </div>
-            <div class="col-lg-12" style="text-align: center">
-                <div id="dual_x_div" style="width: auto; height: 500px; margin: 0 auto !important;"></div>
+            <div class="col-lg-12">
+                <div id="dual_x_div" style="width: max-content; height: 500px; margin: 0 auto !important;"></div>
             </div>
         </div>
     </div>
