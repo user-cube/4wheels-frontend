@@ -4,6 +4,11 @@
 {% endblock %}
 
 {% block content %}
+    {% for message in messages %}
+        {% if message.tags %}
+            <script>alert("{{ message }}")</script> {% endif %}
+
+    {% endfor %}
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -22,7 +27,7 @@
             <div class="col-lg-12">
                 <h1>{{ row.brand }} {{ row.model }}</h1>
             </div>
-            {% if request.user.is_authenticated and not isFav and request.session.user_type == 0%}
+            {% if request.user.is_authenticated and not isFav and request.session.user_type == 0 %}
                 <div class="col-lg-12" style="text-align: left">
                     <form action="/favourites/add/{{ row.id }}" method='post'>
                         {% csrf_token %}
@@ -32,7 +37,7 @@
                     </form>
                 </div>
             {% endif %}
-            {% if request.user.is_authenticated and isFav and request.session.user_type == 0%}
+            {% if request.user.is_authenticated and isFav and request.session.user_type == 0 %}
                 <div class="col-lg-12" style="text-align: left">
                     <form action="/delete/favourite/{{ row.id }}" method='post'>
                         {% csrf_token %}
