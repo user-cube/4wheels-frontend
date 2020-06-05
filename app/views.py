@@ -746,7 +746,7 @@ def listAllUsers(request, typeUser, pageID):
             pageID = pageID - 1
 
             if typeUser == "vendors":
-                r = requests.get(API + "users/vendors?page=" + str(pageID) + "&limit=6",  headers={
+                r = requests.get(API + "users/1?page=" + str(pageID) + "&limit=6",  headers={
                                  'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
                 if r.status_code != 200:
@@ -757,7 +757,7 @@ def listAllUsers(request, typeUser, pageID):
 
                 json = r.json()
             elif typeUser == "buyers":
-                r = requests.get(API + "users/buyers?page=" + str(pageID) + "&limit=6", headers={
+                r = requests.get(API + "users/0?page=" + str(pageID) + "&limit=6", headers={
                                  'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
                 if r.status_code != 200:
