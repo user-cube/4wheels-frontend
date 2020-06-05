@@ -16,3 +16,6 @@ Os utilizadres deste mercado online podem, de uma forma simples e intuitiva, adi
 ## Reports
 * [Milestone 1 - Present the product concept and Architecture](https://drive.google.com/open?id=1gdxnmfhjx6wQBn3YL_-2JKq-Gd-l4ECg)
 * [Milestone 2 - SQA Manual draft; Product specification report (architecture)](https://drive.google.com/open?id=1f-s-O22-jzSuopbjR4nSowg9IGb7pN29)
+* [Milestone 3](https://github.com/user-cube/4wheels-api/pull/10)
+* [Milestone 4](https://github.com/user-cube/4wheels-api/pull/10)
+* [Milestone 5 - Stabilize the Minimal Viable Product](https://github.com/user-cube/4wheels-frontend)
