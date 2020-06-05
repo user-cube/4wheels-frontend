@@ -171,7 +171,7 @@ def getItem(request, carId):
 
             try:
                 favs = r.json()
-                for i in favs:
+                for i in favs['data']:
                     if i['car'] == carId:
                         isFav = True
             except Exception as e:
@@ -319,6 +319,8 @@ def updateProfile(request):
                 logger.error(e)
 
             content = {
+            "profile":
+                {
                 'name': request.POST['name'],
                 'mail': request.user.email,
                 'address': request.POST['morada'],
@@ -326,6 +328,7 @@ def updateProfile(request):
                 'city': request.POST['city'],
                 'nif': request.POST['nif'],
                 'photo': image
+                }
             }
 
             r = requests.put(API + "profile/", json=content,
@@ -369,7 +372,7 @@ def getFavourites(request):
                     return render(request, 'favourite.html', {'database': []})
 
                 ids = []
-                for i in json:
+                for i in json['data']:
                     ids.append(i['car'])
 
                 cars = []
@@ -581,7 +584,7 @@ def saveEdit(request):
                     image = request.POST['photo']
                     logger.error(e)
 
-                content = {
+                content = {"car" : {
                     'brand': request.POST['brand'],
                     'model': request.POST['model'],
                     'month': request.POST['month'],
@@ -593,12 +596,13 @@ def saveEdit(request):
                     'id': request.POST['carID'],
                     'ownerMail': request.user.email,
                     'photo': image
-                }
+                }}
 
                 r = requests.put(API + "car/" + str(request.POST['carID']), json=content,
                                  headers={'Authorization': 'Bearer ' + tokenizer.genToken(request.user.email)})
 
                 if r.status_code != 200:
+                    print(r.status_code)
                     logger.info("saveEdit() - API CODE: " + str(r.status_code))
                     messages.error(
                         request, "Não foi possível atualizar as informações do carro")
